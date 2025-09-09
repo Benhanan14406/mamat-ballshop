@@ -5,5 +5,5 @@ urlpatterns = [
     # URLS using api_view
     path("", views.homepage, name="homepage"),
     path("create_item", views.createProduct, name="createProduct"),
-    path("<int:productId>", views.productDetails, name="productDetails"),
+    path("<uuid:productId>", views.productDetails, name="productDetails"),
 ]
