@@ -6,7 +6,9 @@ from .forms import *
 
 # Home Page View
 def homepage(request):
-    productList = Product.objects.all
+    # productList = Product.objects.all
+    productList = {Product(name = "Bola 1", price = 100, description = "Bola pertama dijual", thumbnail = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Football_Pallo_valmiina-cropped.jpg/250px-Football_Pallo_valmiina-cropped.jpg", category = "Bola futsal", is_featured = True, lingkar = 60, stock = 100), 
+                   Product(name = "Bola 2", price = 150, description = "Bola kedua dijual", thumbnail = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Basketball.png/250px-Basketball.png", category = "Bola basket", is_featured = True, lingkar = 70, stock = 10)}
     return render(request, "HomePage.html", {"productList": productList})
 
 # Item Creation Form
