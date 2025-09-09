@@ -3,12 +3,14 @@ from .models import *
 from .forms import *
 
 # Create your views here.
+productList = [Product(name = "Bola 1", price = 100, description = "Bola pertama dijual", thumbnail = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Football_Pallo_valmiina-cropped.jpg/250px-Football_Pallo_valmiina-cropped.jpg", category = "Bola futsal", is_featured = True, lingkar = 60, stock = 100), 
+                Product(name = "Bola 2", price = 150, description = "Bola kedua dijual", thumbnail = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Basketball.png/250px-Basketball.png", category = "Bola basket", is_featured = True, lingkar = 70, stock = 10)
+                ]
+    
 
 # Home Page View
 def homepage(request):
     # productList = Product.objects.all
-    productList = {Product(name = "Bola 1", price = 100, description = "Bola pertama dijual", thumbnail = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Football_Pallo_valmiina-cropped.jpg/250px-Football_Pallo_valmiina-cropped.jpg", category = "Bola futsal", is_featured = True, lingkar = 60, stock = 100), 
-                   Product(name = "Bola 2", price = 150, description = "Bola kedua dijual", thumbnail = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Basketball.png/250px-Basketball.png", category = "Bola basket", is_featured = True, lingkar = 70, stock = 10)}
     return render(request, "HomePage.html", {"productList": productList})
 
 # Item Creation Form
@@ -40,6 +42,10 @@ def createProduct(request):
 
 # Product Details Page
 def productDetails(request, productId):
-    product = get_object_or_404(Product, pk = productId)
-    return render(request, "ProductDetailsPage.html", {"productViewed": product})
+    product = next((p for p in productList if str(p.id) == str(productId)), None)
+
+    if not product:
+        return render(request, "404.html", status=404)
+    else:
+        return render(request, "ProductDetailsPage.html", {"productViewed": product})
 
