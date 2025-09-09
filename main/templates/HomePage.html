@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    .title {
+        color: black; 
+        font-family: Verdana, Geneva, Tahoma, sans-serif; t
+        ext-align: left; 
+        padding: 1cm; 
+        padding-top: 3cm; 
+        font-size: 250%; 
+        max-width: 100%;
+    }
+
+    .button {
+        align: center;
+        background-color: indianred;
+        font-family: Verdana, Geneva, Tahoma, sans-serif; 
+        text-align: center; 
+        font-size: 150%; 
+        max-width: 10cm;
+        left: 50%;
+        float: center;
+        border: 0.1cm;
+        border-color: darkslategrey;
+        border-style: solid;
+        margin: 1cm;
+    }
+
+    .button a {
+        color: aliceblue;
+        margin-bottom: 1cm; 
+    }
+
+    .itemDisplay {
+        background-color: aliceblue; 
+        margin: 1cm; 
+        margin-top: 1cm; 
+        max-width: 7cm;
+        height: fit-content
+        white-space: nowrap; 
+        font-size: 100vp;
+        padding-top: 1cm;
+        padding-bottom: 1cm;
+        border: 0.1cm;
+        border-color: darkslategrey;
+        border-style: solid;
+        float: left;
+    }
+
+    .itemDisplay .itemDetail {
+        color: aliceblue; 
+        font-family: Verdana, Geneva, Tahoma, sans-serif; 
+        text-align: left; 
+        overflow: hidden;
+    }
+
+    .itemDisplay .itemDetail img {
+        width: 6.5cm;
+        height: 6.5cm; 
+        object-fit: contain;
+    }
+
+{% endblock %}
+
+{% block content %}
+    <h1 class = "title">
+        <b>
+            Products in Stock
+        </b>
+    </h1>
+
+    <div class = "button">
+        <a href = "{% url "createProduct" %}">
+            Create New Product
+        </a>
+    </div>
+
+    <div style = "min-height: 7cm;">
+        {% if productList %}
+            {% for product in productList %}
+                <div class = "itemDisplay">
+                    <a href = "{% url "productDetails" product.id %}">
+                        <b class = "itemDetail" >
+                            <div style = "font-size: 150%; color: black; margin-bottom: 0.5cm;">
+                                {{ product.name }}
+                            </div>
+
+                            <img src = {{ product.thumbnail }} alt = {{ product.name }}>
+
+                            <div style = "font-size: 100%; color: black; margin-top: 0.5cm;">
+                                {{ product.description }}
+                            </div>
+
+                            <div style = "font-size: 125%; color: black;">
+                                Price: {{ product.price }}
+                            </div>
+                        </b>
+                    </a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <b style = "color:black; font-family: Verdana, Geneva, Tahoma, sans-serif; text-align: left; padding: 0.125cm; padding-top: 1cm; font-size: 100%;">
+                No products for sale
+            </b>
+        {% endif %}
+    </div>
+
+{% endblock %}

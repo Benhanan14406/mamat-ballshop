@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    .details {
+        color: black; 
+        font-family: Verdana, Geneva, Tahoma, sans-serif; 
+        text-align: left; 
+        padding-top: 1cm;
+        height: fit-content;
+    }
+{% endblock %}
+
+{% block content %}
+    <div class = "details">
+        <h1 style = "font-size: 250%;">
+            Item Creation Form
+        </h1>
+
+        <form method = "POST" style = "font-size: 100%;">
+            {% csrf_token %}
+            <div style = "padding-top: 2cm; padding-bottom: 1cm;">
+                <label>
+                    Item Name:
+                </label>
+                {{ creationForm.name }}
+            </div>
+
+            <div style = "padding-bottom: 1cm;">
+                <label>
+                    Item Description:
+                </label>
+                {{ creationForm.description }}
+            </div>
+
+            <div style = "padding-bottom: 1cm;">
+                <label>
+                    Item Price:
+                </label>
+                {{ creationForm.price }}
+            </div>
+
+            <div style = "padding-bottom: 1cm;">
+                <label>
+                    Item Thumbnail:
+                </label>
+                {{ creationForm.thumbnail }}
+            </div>
+
+            <div style = "padding-bottom: 1cm;">
+                <label>
+                    Item Category:
+                </label>
+                {{ creationForm.category }}
+            </div>
+
+            <div style = "padding-bottom: 1cm;">
+                <label>
+                    Item is Featured:
+                </label>
+
+               {{ creationForm.is_featured }}
+            </div>
+
+            <div style = "padding-bottom: 1cm;">
+                <label>
+                    Item Stock:
+                </label>
+                {{ creationForm.stock }}
+            </div>
+
+            <div style = "padding-bottom: 1cm;">
+                <label>
+                    Item Size:
+                </label>
+                {{ creationForm.lingkar }}
+            </div>
+
+            <input type = "submit" value = "Create">
+        </form>
+    </div>
+{% endblock %}
