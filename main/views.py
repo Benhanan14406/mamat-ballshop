@@ -11,7 +11,7 @@ productList = [Product(name = "Bola 1", price = 100, description = "Bola pertama
 
 # Home Page View
 def homepage(request):
-    # productList = Product.objects.all
+    productList = Product.objects.all
     return render(request, "HomePage.html", {"productList": productList})
 
 # Item Creation Form
@@ -43,7 +43,7 @@ def createProduct(request):
 
 # Product Details Page
 def productDetails(request, productId):
-    product = next((p for p in productList if str(p.id) == str(productId)), None)
+    product = get_object_or_404(Product, pk = productId)
 
     if not product:
         return render(request, "404.html", status=404)
@@ -61,14 +61,20 @@ def show_json(request):
     return HttpResponse(json_data, content_type="application/json")
 
 def show_xml_by_id(request, productId):
-    product = get_object_or_404(Product, pk = productId)
-    xml_data = serializers.serialize("xml", product)
-    return HttpResponse(xml_data, content_type="application/xml")
+   try:
+       product = Product.objects.filter(pk=productId)
+       xml_data = serializers.serialize("xml", product)
+       return HttpResponse(xml_data, content_type="application/xml")
+   except Product.DoesNotExist:
+       return HttpResponse(status=404)
 
 def show_json_by_id(request, productId):
-    product = get_object_or_404(Product, pk = productId)
-    json_data = serializers.serialize("json", product)
-    return HttpResponse(json_data, content_type="application/json")
+    try:
+       product = Product.objects.get(pk=productId)
+       json_data = serializers.serialize("json", [product])
+       return HttpResponse(json_data, content_type="application/json")
+    except Product.DoesNotExist:
+       return HttpResponse(status=404)
 
 
 # CHALLENGE 2
