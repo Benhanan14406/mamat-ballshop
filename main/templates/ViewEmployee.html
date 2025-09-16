@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    .details {
+        color: black; 
+        font-family: Verdana, Geneva, Tahoma, sans-serif; 
+        text-align: left; 
+        height: fit-content;
+    }
+
+    .details h1 {
+        padding-top: 2cm; 
+        font-size: 200%;
+    }
+
+    .details p {
+        color: black; 
+        font-family: Verdana, Geneva, Tahoma, sans-serif; 
+        text-align: left; 
+        font-size: 100%; 
+        padding-top: 0.5cm; 
+    }
+
+    .details .buttons {
+        background-color: darkslategrey; 
+        margin: 1cm; 
+        height: fit-content;
+        width: fit-content;
+    }
+
+    .details .buttons a {
+        color: white;
+        font-family: Verdana, Geneva, Tahoma, sans-serif; 
+        float: center;
+        margin: 0.5cm; 
+        font-size: 100%;
+        padding-top: 1cm; 
+        padding-bottom: 1cm; 
+    }
+    
+    .details img {
+        width: 10cm;
+        height: 10cm; 
+        object-fit: contain; 
+        margin-top: 1cm;
+        margin-bottom: 1cm;
+    }
+
+{% endblock %}
+
+{% block content %} 
+    <div class = "details">
+        <h1>
+            <b>
+                {{ employee.name }}
+            </b>
+        </h1>
+
+        <p>
+            Age:
+            {{ employee.age }}
+        </p>
+
+        <p>
+            Pesona:
+            {{ employee.pesona }}
+        </p>
+        
+        {% comment %} <div class = "buttons">
+            <a href = "{% url "delete" productViewed.id %}">
+                Delete Product
+            </a>
+        </div> {% endcomment %}
+{% endblock %}

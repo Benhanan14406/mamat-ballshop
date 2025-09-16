@@ -34,6 +34,15 @@ class Product(models.Model):
         self.review = ((self.reviewCount * self.review) + newReview) / (self.review + 1)
         self.reviewCount += 1
 
+# CHALLENGE 1
+class Employee(models.Model):
+    name = models.CharField(max_length=255, default="", editable=False)
+    age = models.PositiveSmallIntegerField(default=0, editable=True)
+    pesona = models.TextField(default="", editable=True)
+
+    def __str__(self):
+        return self.name
+
 # Model Transaksi
 # class Transaksi(models.Model):
 #     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

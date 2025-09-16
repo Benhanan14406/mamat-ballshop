@@ -6,7 +6,6 @@ from .forms import *
 productList = [Product(name = "Bola 1", price = 100, description = "Bola pertama dijual", thumbnail = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Football_Pallo_valmiina-cropped.jpg/250px-Football_Pallo_valmiina-cropped.jpg", category = "Bola futsal", is_featured = True, lingkar = 60, stock = 100), 
                 Product(name = "Bola 2", price = 150, description = "Bola kedua dijual", thumbnail = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Basketball.png/250px-Basketball.png", category = "Bola basket", is_featured = True, lingkar = 70, stock = 10)
                 ]
-    
 
 # Home Page View
 def homepage(request):
@@ -49,3 +48,8 @@ def productDetails(request, productId):
     else:
         return render(request, "ProductDetailsPage.html", {"productViewed": product})
 
+# CHALLENGE 2
+def addEmployee(request):
+    newEmployee = Employee(name = "name", age = 10, pesona = "menawan")
+    newEmployee.save()
+    return render(request, "ViewEmployee.html", {"employee": newEmployee})
