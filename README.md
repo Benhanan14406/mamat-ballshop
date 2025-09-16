@@ -69,7 +69,7 @@ Tidak ada, informasi untuk tutorial 1 sudah sangat baik dan jelas.
 
 ## Screenshot Postman Untuk Access URL XML dan JSON Data Delivery
 
-![Flowchart](xml_all.jpeg)
-![Flowchart](json_all.jpeg)
-![Flowchart](xml_byid.jpeg)
-![Flowchart](json_byid.jpeg)
+![Flowchart](xml_all.png)
+![Flowchart](json_all.png)
+![Flowchart](xml_byid.png)
+![Flowchart](json_byid.png)
