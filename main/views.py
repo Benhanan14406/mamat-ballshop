@@ -1,4 +1,6 @@
 from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse
+from django.core import serializers
 from .models import *
 from .forms import *
 
@@ -47,6 +49,27 @@ def productDetails(request, productId):
         return render(request, "404.html", status=404)
     else:
         return render(request, "ProductDetailsPage.html", {"productViewed": product})
+
+def show_xml(request):
+    productList = Product.objects.all()
+    xml_data = serializers.serialize("xml", productList)
+    return HttpResponse(xml_data, content_type="application/xml")
+
+def show_json(request):
+    productList = Product.objects.all()
+    json_data = serializers.serialize("json", productList)
+    return HttpResponse(json_data, content_type="application/json")
+
+def show_xml_by_id(request, productId):
+    product = get_object_or_404(Product, pk = productId)
+    xml_data = serializers.serialize("xml", product)
+    return HttpResponse(xml_data, content_type="application/xml")
+
+def show_json_by_id(request, productId):
+    product = get_object_or_404(Product, pk = productId)
+    json_data = serializers.serialize("json", product)
+    return HttpResponse(json_data, content_type="application/json")
+
 
 # CHALLENGE 2
 def addEmployee(request):
