@@ -75,6 +75,12 @@
         </a>
     </div>
 
+    <div class = "button">
+        <a href = "{% url "createProduct" %}">
+            Create New Product
+        </a>
+    </div>
+
     <div style = "min-height: 7cm;">
         {% if productList %}
             {% for product in productList %}
