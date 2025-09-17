@@ -76,7 +76,6 @@ def show_json_by_id(request, productId):
     except Product.DoesNotExist:
        return HttpResponse(status=404)
 
-
 # CHALLENGE 2
 def addEmployee(request):
     newEmployee = Employee(name = "name", age = 10, pesona = "menawan")
