@@ -63,6 +63,16 @@
 {% endblock %}
 
 {% block content %}
+    <div style = "font-size: 125%; color: black;">
+        Current user: {{ username }}
+    </div>
+
+    <a href="{% url "logout" %}">
+        <button>
+            Logout
+        </button>
+    </a>
+
     <h1 class = "title">
         <b>
             Products in Stock
@@ -77,6 +87,18 @@
 
     <div style = "min-height: 7cm;">
         {% if productList %}
+            <a href = "?filter=all">
+                <button type="button">
+                    All Products
+                </button>
+            </a>
+
+            <a href = "?filter=my">
+                <button type="button">
+                    My Products
+                </button>
+            </a> 
+
             {% for product in productList %}
                 <div class = "itemDisplay">
                     <a href = "{% url "productDetails" product.id %}">
@@ -86,6 +108,10 @@
                             </div>
 
                             <img src = {{ product.thumbnail }} alt = {{ product.name }}>
+
+                            <div style = "font-size: 100%; color: black; margin-top: 0.5cm;">
+                                Seller: {{ product.user }}
+                            </div>
 
                             <div style = "font-size: 100%; color: black; margin-top: 0.5cm;">
                                 {{ product.description }}

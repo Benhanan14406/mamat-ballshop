@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 import uuid
 
@@ -7,6 +8,7 @@ import uuid
 class Product(models.Model):
 
     # Attribute wajib
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=255, default="", editable=False)
     price = models.PositiveBigIntegerField(default=0, editable=True)
     description = models.TextField(max_length=255, default="", editable=False)
