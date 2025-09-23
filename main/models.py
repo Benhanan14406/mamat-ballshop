@@ -34,11 +34,20 @@ class Product(models.Model):
         self.review = ((self.reviewCount * self.review) + newReview) / (self.review + 1)
         self.reviewCount += 1
 
-# CHALLENGE 1
+# CHALLENGE 1.1
 class Employee(models.Model):
     name = models.CharField(max_length=255, default="", editable=False)
     age = models.PositiveSmallIntegerField(default=0, editable=True)
     pesona = models.TextField(default="", editable=True)
+
+    def __str__(self):
+        return self.name
+    
+# CHALLENGE 2.1
+class Car(models.Model):
+    name = models.CharField(max_length=255, default="", editable=False)
+    brand = models.CharField(max_length=255, default="", editable=False)
+    stock = models.IntegerField(editable=True)
 
     def __str__(self):
         return self.name

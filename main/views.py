@@ -5,13 +5,13 @@ from .models import *
 from .forms import *
 
 # Create your views here.
-productList = [Product(name = "Bola 1", price = 100, description = "Bola pertama dijual", thumbnail = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Football_Pallo_valmiina-cropped.jpg/250px-Football_Pallo_valmiina-cropped.jpg", category = "Bola futsal", is_featured = True, lingkar = 60, stock = 100), 
-                Product(name = "Bola 2", price = 150, description = "Bola kedua dijual", thumbnail = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Basketball.png/250px-Basketball.png", category = "Bola basket", is_featured = True, lingkar = 70, stock = 10)
-                ]
+# productList = [Product(name = "Bola 1", price = 100, description = "Bola pertama dijual", thumbnail = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Football_Pallo_valmiina-cropped.jpg/250px-Football_Pallo_valmiina-cropped.jpg", category = "Bola futsal", is_featured = True, lingkar = 60, stock = 100), 
+#                 Product(name = "Bola 2", price = 150, description = "Bola kedua dijual", thumbnail = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Basketball.png/250px-Basketball.png", category = "Bola basket", is_featured = True, lingkar = 70, stock = 10)
+#                 ]
 
 # Home Page View
 def homepage(request):
-    productList = Product.objects.all
+    productList = Product.objects.all()
     return render(request, "HomePage.html", {"productList": productList})
 
 # Item Creation Form
@@ -76,8 +76,30 @@ def show_json_by_id(request, productId):
     except Product.DoesNotExist:
        return HttpResponse(status=404)
 
-# CHALLENGE 2
+# CHALLENGE 1.2
 def addEmployee(request):
     newEmployee = Employee(name = "name", age = 10, pesona = "menawan")
     newEmployee.save()
     return render(request, "ViewEmployee.html", {"employee": newEmployee})
+
+# CHALLENGE 2.3
+def createCar(request):
+    carList = Car.objects.all()
+
+    if request.method == "POST":
+        creationForm = CarCreationForm(request.POST)
+
+        if (creationForm.is_valid()):
+            # Attribute wajib
+            name = creationForm.cleaned_data["name"]
+            brand = creationForm.cleaned_data["brand"]
+            stock = creationForm.cleaned_data["stock"]
+
+            newCar = Car(name = name, brand = brand, stock = stock)
+            newCar.save()
+
+            # Kembali ke Home Page
+            return render(request, "CarCreationPage.html", {"carList": carList, "creationForm": creationForm})
+    else:
+        creationForm = CarCreationForm()
+    return render(request, "CarCreationPage.html", {"carList": carList, "creationForm": creationForm})

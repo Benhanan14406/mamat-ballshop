@@ -7,6 +7,7 @@ urlpatterns = [
     path("create_item", views.createProduct, name="createProduct"),
     path("<uuid:productId>", views.productDetails, name="productDetails"),
     path("create_employee", views.addEmployee, name="addEmployee"),
+    path("create_car", views.createCar, name="create_car"),
     path("xml", views.show_xml, name="showXML"),
     path("json", views.show_json, name="showJSON"),
     path("xml/<uuid:productId>", views.show_xml_by_id, name="showXMLbyID"),

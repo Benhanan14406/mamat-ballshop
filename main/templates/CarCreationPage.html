@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    .details {
+        color: black; 
+        font-family: Verdana, Geneva, Tahoma, sans-serif; 
+        text-align: left; 
+        padding-top: 1cm;
+        height: fit-content;
+    }
+
+    .itemDisplay {
+        background-color: aliceblue; 
+        margin: 1cm; 
+        margin-top: 1cm; 
+        max-width: 7cm;
+        height: fit-content
+        white-space: nowrap; 
+        font-size: 100vp;
+        padding-top: 1cm;
+        padding-bottom: 1cm;
+        border: 0.1cm;
+        border-color: darkslategrey;
+        border-style: solid;
+        float: left;
+    }
+
+    .itemDisplay .itemDetail {
+        color: aliceblue; 
+        font-family: Verdana, Geneva, Tahoma, sans-serif; 
+        text-align: left; 
+        overflow: hidden;
+    }
+
+{% endblock %}
+
+{% block content %}
+    <div class = "details">
+        <h1 style = "font-size: 250%;">
+            Car Creation Form
+        </h1>
+
+        <div style = "min-height: 7cm;">
+        {% if carList %}
+            {% for car in carList %}
+                <div class = "itemDisplay">
+                    <b class = "itemDetail" >
+                        <div style = "font-size: 150%; color: black; margin-bottom: 0.5cm;">
+                            {{ car.name }}
+                        </div>
+
+                        <div style = "font-size: 100%; color: black; margin-top: 0.5cm;">
+                            Brand: {{ car.brand }}
+                        </div>
+
+                        <div style = "font-size: 125%; color: black;">
+                            Stock: {{ car.stock }}
+                        </div>
+                    </b>
+                </div>
+            {% endfor %}
+        {% else %}
+            <b style = "color:black; font-family: Verdana, Geneva, Tahoma, sans-serif; text-align: left; padding: 0.125cm; padding-top: 1cm; font-size: 100%;">
+                No cars for sale
+            </b>
+        {% endif %}
+    </div>
+
+        <form method = "POST" style = "font-size: 100%;">
+            {% csrf_token %}
+            <div style = "padding-top: 2cm; padding-bottom: 1cm;">
+                <label>
+                    Car Name:
+                </label>
+                {{ creationForm.name }}
+            </div>
+
+            <div style = "padding-bottom: 1cm;">
+                <label>
+                    Car Brand:
+                </label>
+                {{ creationForm.brand }}
+            </div>
+
+            <div style = "padding-bottom: 1cm;">
+                <label>
+                    Item Stock:
+                </label>
+                {{ creationForm.stock }}
+            </div>
+
+            <input type = "submit" value = "Create">
+        </form>
+    </div>
+{% endblock %}
