@@ -5,8 +5,8 @@
         color: black; 
         font-family: Verdana, Geneva, Tahoma, sans-serif; t
         ext-align: left; 
-        padding: 1cm; 
-        padding-top: 3cm; 
+        padding: 0.5cm; 
+        padding-top: 2cm; 
         font-size: 250%; 
         max-width: 100%;
     }
@@ -63,6 +63,18 @@
 {% endblock %}
 
 {% block content %}
+    <div style = "font-size: 125%; color: black; padding-top: 2cm; ;">
+        Current user: {{ username }}
+
+        <div>
+            <a href="{% url "logout" %}">
+                <button>
+                    Logout
+                </button>
+            </a>
+        </div>
+    </div>
+
     <h1 class = "title">
         <b>
             Products in Stock
@@ -73,6 +85,22 @@
         <a href = "{% url "createProduct" %}">
             Create New Product
         </a>
+    </div>
+
+    <div>
+        <a href = "?filter=all">
+            <button type="button">
+                All Products
+            </button>
+        </a>
+    </div>
+
+    <div>
+        <a href = "?filter=my">
+            <button type="button">
+                My Products
+            </button>
+        </a> 
     </div>
 
     <div style = "min-height: 7cm;">
@@ -86,6 +114,10 @@
                             </div>
 
                             <img src = {{ product.thumbnail }} alt = {{ product.name }}>
+
+                            <div style = "font-size: 100%; color: black; margin-top: 0.5cm;">
+                                Seller: {{ product.user }}
+                            </div>
 
                             <div style = "font-size: 100%; color: black; margin-top: 0.5cm;">
                                 {{ product.description }}

@@ -54,4 +54,9 @@ class ProductCreationForm(forms.Form):
     def checkCategoryValid(self):
         category = self.cleaned_data["category"]
         return category
-    
+
+# CHALLENGE 2.2
+class CarCreationForm(forms.Form):
+    name = forms.CharField(max_length=255)
+    brand = forms.CharField(max_length=255)
+    stock = forms.IntegerField()

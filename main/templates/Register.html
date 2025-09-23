@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    .details {
+        color: black; 
+        font-family: Verdana, Geneva, Tahoma, sans-serif; 
+        text-align: left; 
+        padding-top: 1cm;
+        height: fit-content;
+    }
+{% endblock %}
+
+{% block content %}
+    <div class = "details">
+        <h1 style = "font-size: 250%;">
+            Register
+        </h1>
+
+        <form method="POST">
+            {% csrf_token %}
+            <table>
+                {{ form.as_table }}
+                <tr>
+                    <td></td>
+                    <td>
+                        <input type="submit" name="submit" value="Daftar" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>
+                        {{ message }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        </div>
+    </div>
+{% endblock %}
