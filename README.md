@@ -1,4 +1,5 @@
 # **TUGAS INDIVIDU 1**
+#
 
 ### Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).
 
@@ -29,9 +30,11 @@ Menurut saya, framework Django dijadikan permulaan pembelajaran pengembangan per
 
 Tidak ada, informasi untuk tutorial 1 sudah sangat baik dan jelas.
 
-
-
+#
+#
+#
 # **TUGAS INDIVIDU 2**
+#
 
 ### Jelaskan mengapa kita memerlukan data delivery dalam pengimplementasian sebuah platform?
 
@@ -73,3 +76,34 @@ Tidak ada, informasi untuk tutorial 1 sudah sangat baik dan jelas.
 ![Flowchart](json_all.png)
 ![Flowchart](xml_byid.png)
 ![Flowchart](json_byid.png)
+
+#
+#
+#
+# **TUGAS INDIVIDU 2**
+#
+
+### Apa itu Django AuthenticationForm? Jelaskan juga kelebihan dan kekurangannya.
+
+Django AuthenticationForm adalah form bawaan Django yang membantu implementasi fungsionalitas autentikasi dengan memverifikasi data User. Django AuthenticationForm, sebagai fitur bawaan, memiliki keamanan, kemudahan integrasi, dan kompatibilitas dengan Django secara langsung. Akan tetapi, Django AuthenticationForm hanya mampu memverifikasi model User bawaan Django dan bergantung pada session-based auth. 
+
+### Apa perbedaan antara autentikasi dan otorisasi? Bagaiamana Django mengimplementasikan kedua konsep tersebut?
+
+Autentikasi adalah proses verifikasi identitas pengguna, sedangkan otorisasi adakah proses pemberian hak akses pada pengguna. Django memfasilitasi autentikasi dengan form AuthenticationForm dan otorisasi dengan decorator dan class-based view.
+
+### Apa saja kelebihan dan kekurangan session dan cookies dalam konteks menyimpan state di aplikasi web?
+
+Session memiliki tingkat keamanan yang tinggi dan kapasitas yang besar, tetapi hal tersebut membuat session memiliki performance yang buruk, sedangkan cookie memiliki performance dan scalability yang baik akibat penyimpanan data di client, tetapi hal tersebut membuat cookie lebih rentan terhadap serangan siber dan kapasitas yang kecil.
+
+### Apakah penggunaan cookies aman secara default dalam pengembangan web, atau apakah ada risiko potensial yang harus diwaspadai? Bagaimana Django menangani hal tersebut?
+
+Secara default, penggunaan cookies dalam pengembangan web dapat membuat web rentan terhadap serangan XSS, CSRF,  dan session hijacking. Untuk menangani hal tersebut, Django memiliki fungsionalitas validasi dan built-in security middleware untuk menangani serangan XSS, CSRF token untuk menangani serangan CSRF, dan session cookie security settings default untuk menangani session hijacking.
+
+### Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).
+
+1. Cek ketentuan tugas.
+2. Buat function register, login, dan logout untuk autentikasi pengguna.
+3. Modifikasi kode agar sesuai dengan program secara keseluruhan.
+4. Hubungkan model Product dengan User.
+5. Implementasi otorisasi di views.py.
+6. Buat halaman HTML dan link URL yang sesuai.

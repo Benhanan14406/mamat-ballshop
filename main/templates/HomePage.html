@@ -5,8 +5,8 @@
         color: black; 
         font-family: Verdana, Geneva, Tahoma, sans-serif; t
         ext-align: left; 
-        padding: 1cm; 
-        padding-top: 3cm; 
+        padding: 0.5cm; 
+        padding-top: 2cm; 
         font-size: 250%; 
         max-width: 100%;
     }
@@ -63,15 +63,17 @@
 {% endblock %}
 
 {% block content %}
-    <div style = "font-size: 125%; color: black;">
+    <div style = "font-size: 125%; color: black; padding-top: 2cm; ;">
         Current user: {{ username }}
-    </div>
 
-    <a href="{% url "logout" %}">
-        <button>
-            Logout
-        </button>
-    </a>
+        <div>
+            <a href="{% url "logout" %}">
+                <button>
+                    Logout
+                </button>
+            </a>
+        </div>
+    </div>
 
     <h1 class = "title">
         <b>
@@ -85,20 +87,24 @@
         </a>
     </div>
 
+    <div>
+        <a href = "?filter=all">
+            <button type="button">
+                All Products
+            </button>
+        </a>
+    </div>
+
+    <div>
+        <a href = "?filter=my">
+            <button type="button">
+                My Products
+            </button>
+        </a> 
+    </div>
+
     <div style = "min-height: 7cm;">
         {% if productList %}
-            <a href = "?filter=all">
-                <button type="button">
-                    All Products
-                </button>
-            </a>
-
-            <a href = "?filter=my">
-                <button type="button">
-                    My Products
-                </button>
-            </a> 
-
             {% for product in productList %}
                 <div class = "itemDisplay">
                     <a href = "{% url "productDetails" product.id %}">

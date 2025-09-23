@@ -51,7 +51,7 @@ def createProduct(request):
             newBola.save()
 
             # Kembali ke Home Page
-            return homepage(request=request)
+            return render(request, "HomePage.html", {"productList": Product.objects.all(), "username": request.user.username})
     else:
         creationForm = ProductCreationForm()
     return render(request, "ProductCreationPage.html", {"creationForm": creationForm})
@@ -104,7 +104,7 @@ def register(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Your account has been successfully created!")
-            return redirect("main:login")
+            return redirect("login")
     return render(request, "Register.html", {'form':form})
 
 def login_user(request):
@@ -114,7 +114,7 @@ def login_user(request):
       if form.is_valid():
         user = form.get_user()
         login(request, user)
-        response = HttpResponseRedirect(reverse("main:homepage"))
+        response = HttpResponseRedirect(reverse("homepage"))
         response.set_cookie("last_login", str(datetime.datetime.now()))
         return response
 
@@ -124,7 +124,7 @@ def login_user(request):
 
 def logout_user(request):
     logout(request)
-    response = HttpResponseRedirect(reverse("main:login"))
+    response = HttpResponseRedirect(reverse("login"))
     response.delete_cookie("last_login")
     return response
 
