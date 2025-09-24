@@ -107,7 +107,7 @@
         {% if productList %}
             {% for product in productList %}
                 <div class = "itemDisplay">
-                    <a href = "{% url "productDetails" product.uuid %}">
+                    <a href = "{% url "productDetails" product.id %}">
                         <b class = "itemDetail" >
                             <div style = "font-size: 150%; color: black; margin-bottom: 0.5cm;">
                                 {{ product.name }}

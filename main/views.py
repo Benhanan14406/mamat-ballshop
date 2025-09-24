@@ -51,7 +51,7 @@ def createProduct(request):
             newBola.save()
 
             # Kembali ke Home Page
-            return redirect("homepage")
+            return HttpResponseRedirect(reverse("homepage"))
     else:
         creationForm = ProductCreationForm()
     return render(request, "ProductCreationPage.html", {"creationForm": creationForm})

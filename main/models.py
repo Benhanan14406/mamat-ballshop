@@ -17,7 +17,7 @@ class Product(models.Model):
     is_featured = models.BooleanField(default=False, editable=True)
     
     # Attribute custom
-    uuid = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     lingkar = models.FloatField(default=0, editable=False)
     stock = models.PositiveIntegerField(default=0, editable=True)
     review = models.SmallIntegerField(default=0, editable=True)
