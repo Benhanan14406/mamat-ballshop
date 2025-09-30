@@ -1,4 +1,4 @@
-# **TUGAS INDIVIDU 1**
+# **TUGAS INDIVIDU 2**
 #
 
 ### Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).
@@ -33,7 +33,7 @@ Tidak ada, informasi untuk tutorial 1 sudah sangat baik dan jelas.
 #
 #
 #
-# **TUGAS INDIVIDU 2**
+# **TUGAS INDIVIDU 3**
 #
 
 ### Jelaskan mengapa kita memerlukan data delivery dalam pengimplementasian sebuah platform?
@@ -80,7 +80,7 @@ Tidak ada, informasi untuk tutorial 1 sudah sangat baik dan jelas.
 #
 #
 #
-# **TUGAS INDIVIDU 2**
+# **TUGAS INDIVIDU 4**
 #
 
 ### Apa itu Django AuthenticationForm? Jelaskan juga kelebihan dan kekurangannya.
@@ -107,3 +107,45 @@ Secara default, penggunaan cookies dalam pengembangan web dapat membuat web rent
 4. Hubungkan model Product dengan User.
 5. Implementasi otorisasi di views.py.
 6. Buat halaman HTML dan link URL yang sesuai.
+
+#
+#
+#
+# **TUGAS INDIVIDU 5**
+#
+
+### Jika terdapat beberapa CSS selector untuk suatu elemen HTML, jelaskan urutan prioritas pengambilan CSS selector tersebut!
+
+1. Inline style (CSS yang ditulis langsung dalam elemen)
+2. ID selector (CSS untuk id tertentu)
+3. Class selector (CSS untuk class tertentu)
+4. Element selector (CSS untuk elemen tertentu)
+
+###  Mengapa responsive design menjadi konsep yang penting dalam pengembangan aplikasi web? Berikan contoh aplikasi yang sudah dan belum menerapkan responsive design, serta jelaskan mengapa!
+
+Responsive design menjadi konsep yang penting dalam pengembangan aplikasi web karena responsive design memungkinkan aplikasi masih memiliki tampilan yang compatible untuk berbagai device dan meningkatkan user experience. 
+
+Contoh aplikasi yang sudah menerapkan responsive design: **Tokopedia**
+Alasan: Untuk memungkinkan penggunaan Tokopedia di berbagai device sehingga memudahkan para pelanggan untuk membeli barang dan memberi untung bagi pihak Tokopedia.
+
+Contoh aplikasi yang belum menerapkan responsive design: **Aplikasi Lama Dengan Ukuran Screen Fixed**
+Alasan: Para pengguna pada masanya masih sering menggunakan hanya satu tipe device sehingga belum ada keperluan untuk membuat design yang responsive.
+
+### Jelaskan perbedaan antara margin, border, dan padding, serta cara untuk mengimplementasikan ketiga hal tersebut!
+
+**Margin**: Space antara border suatu elemen dengan elemen external lainnya.
+**Border**: Garis tepi dari elemen.
+**Padding**: Space antara isi suatu elemen dengan bordernya.
+
+Ketiga hal tersebut dapat diimplementasikan dengan CSS.
+
+###  Jelaskan konsep flex box dan grid layout beserta kegunaannya!
+
+Flex box digunakan untuk mengatur posisi elemen-elemen dalam satu dimensi sedangkan grid layout digunakan untuk mengatur posisi elemen-elemen dalam dua dimensi. 
+
+### Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial)!
+
+1. Cek ketentuan tugas.
+2. Rencanakan design yang akan diimplementasi
+3. Eksperimentasi untuk membuat tampilan yang ideal.
+4. Membuat method edit dan delete untuk Product.
