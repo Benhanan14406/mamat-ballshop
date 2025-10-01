@@ -11,7 +11,7 @@ class Product(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=255, default="", editable=False)
     price = models.PositiveBigIntegerField(default=0, editable=True)
-    description = models.TextField(max_length=255, default="", editable=False)
+    description = models.TextField(max_length=255, default="", editable=True)
     thumbnail = models.URLField(editable=True)
     category = models.CharField(default="", editable=False)
     is_featured = models.BooleanField(default=False, editable=True)

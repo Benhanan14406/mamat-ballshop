@@ -80,10 +80,18 @@
          <p style = "padding-top: 0cm;">
             Stock: {{ productViewed.stock }}
         </p>
-        
-        {% comment %} <div class = "buttons">
-            <a href = "{% url "delete" productViewed.id %}">
-                Delete Product
-            </a>
-        </div> {% endcomment %}
+
+        {% if productViewed.user == currentUser %}
+            <div class = "buttons">
+                <a href = "{% url "editProduct" productViewed.id %}">
+                    Edit Product
+                </a>
+            </div>
+            
+            <div class = "buttons">
+                <a href = "{% url "deleteProduct" productViewed.id %}">
+                    Delete Product
+                </a>
+            </div>
+        {% endif %}
 {% endblock %}

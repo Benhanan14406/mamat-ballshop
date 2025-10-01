@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    .details {
+        color: black; 
+        font-family: Verdana, Geneva, Tahoma, sans-serif; 
+        text-align: left; 
+        padding-top: 1cm;
+        height: fit-content;
+    }
+{% endblock %}
+
+{% block content %}
+    <div class = "details">
+        <h1 style = "font-size: 250%;">
+            Item Editor Form
+        </h1>
+
+        <form method = "POST" style = "font-size: 100%;">
+            {% csrf_token %}
+            <div style = "padding-top: 2cm; padding-bottom: 1cm;">
+                <label>
+                    Item Name:
+                </label>
+                {{ product.name }}
+            </div>
+
+            <div style = "padding-bottom: 1cm;">
+                <label>
+                    Item Description:
+                </label>
+                {{ product.description }}
+            </div>
+
+            <div style = "padding-bottom: 1cm;">
+                <label>
+                    Item Price:
+                </label>
+                {{ price }}
+            </div>
+
+            <div style = "padding-bottom: 1cm;">
+                <label>
+                    Item Thumbnail:
+                </label>
+                {{ thumbnail }}
+            </div>
+
+            <div style = "padding-bottom: 1cm;">
+                <label>
+                    Item Category:
+                </label>
+                {{ product.category }}
+            </div>
+
+            <div style = "padding-bottom: 1cm;">
+                <label>
+                    Item is Featured:
+                </label>
+
+               {{ is_featured }}
+            </div>
+
+            <div style = "padding-bottom: 1cm;">
+                <label>
+                    Item Stock:
+                </label>
+                {{ stock }}
+            </div>
+
+            <div style = "padding-bottom: 1cm;">
+                <label>
+                    Item Size:
+                </label>
+                {{ product.lingkar }}
+            </div>
+
+            <input type = "submit" value = "Create">
+        </form>
+    </div>
+{% endblock %}

@@ -51,10 +51,38 @@ def createProduct(request):
             newBola.save()
 
             # Kembali ke Home Page
-            return render(request, "HomePage.html", {"productList": Product.objects.all(), "username": request.user.username})
+            return HttpResponseRedirect(reverse("homepage"))
     else:
         creationForm = ProductCreationForm()
     return render(request, "ProductCreationPage.html", {"creationForm": creationForm})
+
+@login_required(login_url="/login")
+def editProduct(request, productId):
+    if request.method == "POST":
+        creationForm = ProductCreationForm(request.POST)
+        product = get_object_or_404(Product, pk = productId)
+
+        price = request.POST["price"]
+        desc = request.POST["description"]
+        thumbnail = request.POST["thumbnail"]
+        is_featured = request.POST["is_featured"]
+
+        # Attribute custom
+        stock = request.POST["stock"]
+
+        product.save()
+
+        return HttpResponseRedirect(reverse("homepage"))
+    else:
+        creationForm = ProductCreationForm()
+    return render(request, "ProductCreationPage.html", {"creationForm": creationForm, "product":product, "price": price, "desc": desc, "thumbnail": thumbnail, "stock": stock, "is_featured": is_featured})
+
+@login_required(login_url="/login")
+def deleteProduct(request, productId):
+    productToDelete = get_object_or_404(Product, pk = productId)
+    productToDelete.delete()
+    return HttpResponseRedirect(reverse("homepage"))
+
 
 # Product Details Page
 @login_required(login_url="/login")
@@ -64,7 +92,7 @@ def productDetails(request, productId):
     if not product:
         return render(request, "404.html", status=404)
     else:
-        return render(request, "ProductDetailsPage.html", {"productViewed": product})
+        return render(request, "ProductDetailsPage.html", {"productViewed": product, "currentUser": request.user})
 
 @login_required(login_url="/login")
 def show_xml(request):
@@ -81,7 +109,7 @@ def show_json(request):
 @login_required(login_url="/login")
 def show_xml_by_id(request, productId):
    try:
-       product = Product.objects.filter(pk=productId)
+       product = Product.objects.filter(pk = productId)
        xml_data = serializers.serialize("xml", product)
        return HttpResponse(xml_data, content_type="application/xml")
    except Product.DoesNotExist:
@@ -90,7 +118,7 @@ def show_xml_by_id(request, productId):
 @login_required(login_url="/login")
 def show_json_by_id(request, productId):
     try:
-       product = Product.objects.get(pk=productId)
+       product = Product.objects.get(pk = productId)
        json_data = serializers.serialize("json", [product])
        return HttpResponse(json_data, content_type="application/json")
     except Product.DoesNotExist:
@@ -109,7 +137,7 @@ def register(request):
 
 def login_user(request):
    if request.method == "POST":
-      form = AuthenticationForm(data=request.POST)
+      form = AuthenticationForm(data = request.POST)
 
       if form.is_valid():
         user = form.get_user()
