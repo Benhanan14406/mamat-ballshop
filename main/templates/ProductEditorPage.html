@@ -18,18 +18,11 @@
 
         <form method = "POST" style = "font-size: 100%;">
             {% csrf_token %}
-            <div style = "padding-top: 2cm; padding-bottom: 1cm;">
-                <label>
-                    Item Name:
-                </label>
-                {{ product.name }}
-            </div>
-
             <div style = "padding-bottom: 1cm;">
                 <label>
                     Item Description:
                 </label>
-                {{ product.description }}
+                {{ desc }}
             </div>
 
             <div style = "padding-bottom: 1cm;">
@@ -48,13 +41,6 @@
 
             <div style = "padding-bottom: 1cm;">
                 <label>
-                    Item Category:
-                </label>
-                {{ product.category }}
-            </div>
-
-            <div style = "padding-bottom: 1cm;">
-                <label>
                     Item is Featured:
                 </label>
 
@@ -66,13 +52,6 @@
                     Item Stock:
                 </label>
                 {{ stock }}
-            </div>
-
-            <div style = "padding-bottom: 1cm;">
-                <label>
-                    Item Size:
-                </label>
-                {{ product.lingkar }}
             </div>
 
             <input type = "submit" value = "Create">

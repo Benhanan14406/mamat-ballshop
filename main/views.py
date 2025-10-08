@@ -1,11 +1,14 @@
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.core import serializers
 from django.urls import reverse
+from django.utils.html import strip_tags
 from .models import *
 from .forms import *
 import datetime
@@ -34,18 +37,19 @@ def createProduct(request):
         creationForm = ProductCreationForm(request.POST)
 
         if (creationForm.is_valid()):
+
             # Attribute wajib
             user = request.user
-            name = creationForm.cleaned_data["name"]
-            price = creationForm.cleaned_data["price"]
-            desc = creationForm.cleaned_data["description"]
-            thumbnail = creationForm.cleaned_data["thumbnail"]
-            category = creationForm.cleaned_data["category"]
-            is_featured = creationForm.cleaned_data["is_featured"]
+            name = creationForm.checkNameValid
+            price = creationForm.checkPriceValid
+            desc = creationForm.checkDescValid
+            thumbnail = creationForm.cleaned_data['thumbnail']
+            category = creationForm.checkCategoryValid
+            is_featured = creationForm.cleaned_data['is_featured']
 
             # Attribute custom
-            lingkar = creationForm.cleaned_data["lingkar"]
-            stock = creationForm.cleaned_data["stock"]
+            lingkar = creationForm.checkSizeValid
+            stock = creationForm.checkStockValid
 
             newBola = Product(user = user, name = name, price = price, description = desc, category = category, thumbnail = thumbnail, is_featured = is_featured, lingkar = lingkar, stock = stock)
             newBola.save()
@@ -58,24 +62,23 @@ def createProduct(request):
 
 @login_required(login_url="/login")
 def editProduct(request, productId):
+    product = get_object_or_404(Product, pk = productId)
     if request.method == "POST":
         creationForm = ProductCreationForm(request.POST)
-        product = get_object_or_404(Product, pk = productId)
 
-        price = request.POST["price"]
-        desc = request.POST["description"]
-        thumbnail = request.POST["thumbnail"]
-        is_featured = request.POST["is_featured"]
+        product.price = request.POST["price"]
+        product.description = request.POST["description"]
+        product.thumbnail = request.POST["thumbnail"]
+        product.is_featured = request.POST["is_featured"]
 
         # Attribute custom
-        stock = request.POST["stock"]
+        product.stock = request.POST["stock"]
 
         product.save()
-
         return HttpResponseRedirect(reverse("homepage"))
     else:
         creationForm = ProductCreationForm()
-    return render(request, "ProductCreationPage.html", {"creationForm": creationForm, "product":product, "price": price, "desc": desc, "thumbnail": thumbnail, "stock": stock, "is_featured": is_featured})
+    return render(request, "ProductCreationPage.html", {"creationForm": creationForm, "product": product})
 
 @login_required(login_url="/login")
 def deleteProduct(request, productId):
@@ -103,26 +106,65 @@ def show_xml(request):
 @login_required(login_url="/login")
 def show_json(request):
     productList = Product.objects.all()
-    json_data = serializers.serialize("json", productList)
-    return HttpResponse(json_data, content_type="application/json")
+    data = [
+        {
+            # Attribute wajib
+            'user': product.user,
+            'name': str(product.name),
+            'price': product.price,
+            'description': product.description,
+            'thumbnai': product.thumbnail,
+            'category': product.category,
+            'is_featured': product.is_featured,
+            
+            # Attribute custom
+            'id': product.id,
+            'lingkar': product.lingkar,
+            'stock': product.stock,
+            'review': product.review,
+            'reviewCount': product.reviewCount,
+            'user_id': product.user_id
+        }
+        for product in productList
+    ]
+
+    return JsonResponse(data, safe=False)
 
 @login_required(login_url="/login")
 def show_xml_by_id(request, productId):
-   try:
+    try:
        product = Product.objects.filter(pk = productId)
        xml_data = serializers.serialize("xml", product)
        return HttpResponse(xml_data, content_type="application/xml")
-   except Product.DoesNotExist:
+    except Product.DoesNotExist:
        return HttpResponse(status=404)
 
 @login_required(login_url="/login")
 def show_json_by_id(request, productId):
     try:
-       product = Product.objects.get(pk = productId)
-       json_data = serializers.serialize("json", [product])
-       return HttpResponse(json_data, content_type="application/json")
+        product = Product.objects.select_related('user').get(pk = productId)
+        data = [
+            {
+                # Attribute wajib
+                'user': product.user,
+                'name': str(product.name),
+                'price': product.price,
+                'description': product.description,
+                'thumbnai': product.thumbnail,
+                'category': product.category,
+                'is_featured': product.is_featured,
+                
+                # Attribute custom
+                'id': product.id,
+                'lingkar': product.lingkar,
+                'stock': product.stock,
+                'review': product.review,
+                'reviewCount': product.reviewCount
+            }
+        ]
+        return JsonResponse(data)
     except Product.DoesNotExist:
-       return HttpResponse(status=404)
+        return JsonResponse({'detail': 'Not found'}, status=404)
 
 def register(request):
     form = UserCreationForm()
@@ -147,7 +189,7 @@ def login_user(request):
         return response
 
    else:
-      form = AuthenticationForm(request)
+        form = AuthenticationForm(request)
    return render(request, "Login.html", {'form':form})
 
 def logout_user(request):
@@ -155,6 +197,27 @@ def logout_user(request):
     response = HttpResponseRedirect(reverse("login"))
     response.delete_cookie("last_login")
     return response
+
+@csrf_exempt
+@require_POST
+def addProductAjax(request):
+    # Attribute wajib
+    user = request.user
+    name = strip_tags(request.POST.get("name"))
+    price = strip_tags(request.POST.get("price"))
+    desc = strip_tags(request.POST.get("description"))
+    thumbnail = strip_tags(request.POST.get("thumbnail"))
+    category = strip_tags(request.POST.get("category"))
+    is_featured = strip_tags(request.POST.get("is_featured"))
+
+    # Attribute custom
+    lingkar = strip_tags(request.POST.get("lingkar"))
+    stock = strip_tags(request.POST.get("stock"))
+
+    newBola = Product(user = user, name = name, price = price, description = desc, category = category, thumbnail = thumbnail, is_featured = is_featured, lingkar = lingkar, stock = stock)
+    newBola.save()
+
+    return HttpResponse(b"CREATED", status=201)
 
 # CHALLENGE 1.2
 def addEmployee(request):

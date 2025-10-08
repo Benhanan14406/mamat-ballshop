@@ -149,3 +149,31 @@ Flex box digunakan untuk mengatur posisi elemen-elemen dalam satu dimensi sedang
 2. Rencanakan design yang akan diimplementasi
 3. Eksperimentasi untuk membuat tampilan yang ideal.
 4. Membuat method edit dan delete untuk Product.
+
+#
+#
+#
+# **TUGAS INDIVIDU 6**
+#
+
+### Apa perbedaan antara synchronous request dan asynchronous request?
+
+Pada synchronous request, web akan menunggu sampai response diperoleh dari server, sedangkan pada asynchronous request, web tetap responsive selama menunggu response.
+
+### Bagaimana AJAX bekerja di Django (alur request–response)?
+
+Event di client -> JS mengirim request AJAX ke Django -> Request diproses Django -> Server memberi response -> JS di client memproses response
+
+### Apa keuntungan menggunakan AJAX dibandingkan render biasa di Django?
+
+AJAX memungkinkan web yang lebih responsive dan mulus dibandingkan render biasa.
+
+### Bagaimana cara memastikan keamanan saat menggunakan AJAX untuk fitur Login dan Register di Django?
+
+1. Menggunakan CSRF token.
+2. Menggunakan HTTPS.
+3. Validasi data.
+
+### Bagaimana AJAX mempengaruhi pengalaman pengguna (User Experience) pada website?
+
+AJAX membuat web lebih responsive dan mulus sehingga user lebih nyaman dan tidak perlu menunggu lama saat menggunakan qeb.

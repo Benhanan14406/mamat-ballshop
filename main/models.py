@@ -53,6 +53,23 @@ class Car(models.Model):
 
     def __str__(self):
         return self.name
+    
+# CHALLENGE 4.1
+class Book(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
+    title = models.CharField(max_length=255, editable=False)
+
+    def __str__(self):
+        return self.title
+    
+# CHALLENGE 4.2
+class Author(models.Model):
+    bio = models.TextField(default="", editable=True)
+    books = models.ManyToManyField(Book)
+    user = models.OneToOneField(User, on_delete=models.RESTRICT, null=False)
+
+    def __str__(self):
+        return self.user
 
 # Model Transaksi
 # class Transaksi(models.Model):

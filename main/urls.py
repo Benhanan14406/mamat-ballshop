@@ -8,6 +8,7 @@ urlpatterns = [
     path("login/", views.login_user, name="login"),
     path("logout/", views.logout_user, name="logout"),
     path("create_item", views.createProduct, name="createProduct"),
+    path("create_item_ajax", views.addProductAjax, name="addProductAjax"),
     path("<uuid:productId>/", views.productDetails, name="productDetails"),
     path("<uuid:productId>/edit/", views.editProduct, name="editProduct"),
     path("<uuid:productId>/delete/", views.deleteProduct, name="deleteProduct"),
