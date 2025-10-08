@@ -50,48 +50,202 @@
 
 {% block content %} 
     <div class = "details">
-        <h1>
-            <b>
-                {{ productViewed.name }}
-            </b>
-        </h1>
+        <div class = "buttons">
+            <a href = "{% url "homepage" %}">
+                Back to Home
+            </a>
+        </div>
+    </div>
 
-        <img src = {{ productViewed.thumbnail }} alt = {{ productViewed.name }}>
+    <div id="loading-state" class="bg-white rounded-lg border border-gray-200 p-12 text-center">
+        <svg class="animate-spin h-8 w-8 text-green-600 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+        </svg>
+        <p class="text-gray-600 mt-3">Loading news detail...</p>
+    </div>
 
-        <p>
-            Description:
-            {{ productViewed.description }}
-        </p>
+    <div id="error-state" class="bg-white rounded-lg border border-gray-200 p-12 text-center hidden">
+        <div class="w-16 h-16 mx-auto mb-4">
+            <div class="text-red-500 text-5xl">⚠️</div>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">Failed to load news</h3>
+        <p class="text-gray-500">Please try again later.</p>
+    </div>
 
-        <p>
-            Category:
-            {{ productViewed.category }}
-        </p>
+    <div class = "details">
+        <div id="productName">
+            <h1>
+                <b>
+                    {{ name }}
+                </b>
+            </h1>
+        </div>
 
-         <p>
-            Size:
-            {{ productViewed.lingkar }} cm
-        </p>
+        <div id="seller">
+            <p style = "font-size: 75%">
+                Seller: {{ seller }}
+            </p>
+        </div>
 
-        <p style = "font-size: 175%">
-            Price: {{ productViewed.price }}
-        </p>
+        <div id = "imageContainer">
+            <img id = "image" src = {{ thumbnail }} alt = {{ name }}>
+        </div>
 
-         <p style = "padding-top: 0cm;">
-            Stock: {{ productViewed.stock }}
-        </p>
+        <div id="description">
+            <p>
+                Description:
+                {{ description }}
+            </p>
+        </div>
 
-        {% if productViewed.user == currentUser %}
+        <div id="category">
+            <p>
+                Category:
+                {{ category }}
+            </p>
+        </div>
+
+        <div id="lingkar">
+            <p>
+                Size:
+                {{ lingkar }} cm
+            </p>
+        </div>
+
+        <div id="price">
+            <p style = "font-size: 175%">
+                Price: {{ price }}
+            </p>
+        </div>
+
+        <div id="stock">
+            <p style = "padding-top: 0cm;">
+                Stock: {{ stock }}
+            </p>
+        </div>
+
+        {% if user == currentUser %}
             <div class = "buttons">
-                <a href = "{% url "editProduct" productViewed.id %}">
+                <a href = "{% url "editProduct" id %}">
                     Edit Product
                 </a>
             </div>
             
             <div class = "buttons">
-                <a href = "{% url "deleteProduct" productViewed.id %}">
+                <a href = "{% url "deleteProduct" id %}">
                     Delete Product
                 </a>
             </div>
         {% endif %}
+    </div>
+
+    <script>
+        // Configuration
+        const PRODUCT_ID = "{{ product.id }}";
+        const PRODUCT_DETAIL_ENDPOINT = `{% url 'show_json_by_id' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', NEWS_ID);
+
+        // DOM Elements
+        const loadingState = document.getElementById('loading-state');
+        const errorState = document.getElementById('error-state');
+        const badgesContainer = document.getElementById('badges-container');
+        const productName = document.getElementById('productName');
+        const imageContainer = document.getElementById('imageContainer');
+        const image = document.getElementById('image');
+        const description = document.getElementById('description');
+        const seller = document.getElementById('seller');
+        const price = document.getElementById('price');
+        const category = document.getElementById('category');
+        const lingkar = document.getElementById('lingkar');
+        const stock = document.getElementById('stock');
+
+        // Show/hide page sections
+        function showState(state) {
+            loadingState.classList.toggle('hidden', state !== 'loading');
+            errorState.classList.toggle('hidden', state !== 'error');
+            description.classList.toggle('hidden', state !== 'ready');
+        }
+
+        // Get readable category name
+        function getCategoryLabel(categoryCode) {
+            const categoryMapping = {
+                transfer: 'Transfer',
+                update: 'Update',
+                exclusive: 'Exclusive',
+                match: 'Match',
+                rumor: 'Rumor',
+                analysis: 'Analysis',
+            };
+            return categoryMapping[categoryCode] || categoryCode;
+        }
+
+        // Render article content
+        function renderProduct(product) {
+            // Set title
+            productName = product.name;
+            document.name = `${product.name} - Mamat Ballshop`;
+            
+            // Set badges
+            badgesContainer.innerHTML = '';
+            
+            // Category badge
+            const categoryBadge = document.createElement('span');
+            categoryBadge.className = 'inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-green-600 text-white';
+            categoryBadge.textContent = getCategoryLabel(news.category);
+            badgesContainer.appendChild(categoryBadge);
+            
+            // Featured badge
+            if (product.is_featured) {
+                const featuredBadge = document.createElement('span');
+                featuredBadge.className = 'inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-yellow-100 text-yellow-800';
+                featuredBadge.textContent = 'Featured';
+                badgesContainer.appendChild(featuredBadge);
+            }
+            
+            // Set featured image
+            if (product.thumbnail) {
+                image.src = product.thumbnail;
+                image.alt = product.name;
+                imageContainer.classList.remove('hidden');
+            } else {
+                imageContainer.classList.add('hidden');
+            }
+            
+            // Set content
+            description.textContent = product.description;
+            lingkar.textContent = product.lingkar;
+            stock.textContent = product.stock;
+            category.textContent = product.category;
+            price.textContent = product.price;
+            
+            // Set author
+            const sellerName = product.user || 'Anonymous';
+            seller.textContent = `Author: ${sellerName}`;
+        }
+
+        // Fetch news detail
+        async function loadProductsDetail() {
+            try {
+                showState('loading');
+                
+                const response = await fetch(PRODUCT_DETAIL_ENDPOINT, {
+                    headers: { 'Accept': 'application/json' },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch product detail');
+                }
+
+                const productData = await response.json();
+                renderProduct(productData);
+                showState('ready');
+            } catch (error) {
+                console.error('Error loading product detail:', error);
+                showState('error');
+            }
+        }
+
+        // Initialize page
+        loadProductsDetail();
+    </script>
 {% endblock %}
