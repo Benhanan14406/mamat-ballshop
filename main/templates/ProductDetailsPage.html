@@ -77,73 +77,73 @@
         <div id="productName">
             <h1>
                 <b>
-                    {{ name }}
+                    {{ product.name }}
                 </b>
             </h1>
         </div>
 
         <div id="seller">
             <p style = "font-size: 75%">
-                Seller: {{ seller }}
+                Seller: {{ product.user }}
             </p>
         </div>
 
         <div id = "imageContainer">
-            <img id = "image" src = {{ thumbnail }} alt = {{ name }}>
+            <img id = "image" src = {{ product.thumbnail }} alt = {{ product.name }}>
         </div>
 
         <div id="description">
             <p>
                 Description:
-                {{ description }}
+                {{ product.description }}
             </p>
         </div>
 
         <div id="category">
             <p>
                 Category:
-                {{ category }}
+                {{ product.category }}
             </p>
         </div>
 
         <div id="lingkar">
             <p>
                 Size:
-                {{ lingkar }} cm
+                {{ product.lingkar }} cm
             </p>
         </div>
 
         <div id="price">
             <p style = "font-size: 175%">
-                Price: {{ price }}
+                Price: {{ product.price }}
             </p>
         </div>
 
         <div id="stock">
             <p style = "padding-top: 0cm;">
-                Stock: {{ stock }}
+                Stock: {{ product.stock }}
             </p>
         </div>
 
         {% if user == currentUser %}
-            <div class = "buttons">
-                <a href = "{% url "editProduct" id %}">
+             {% comment %} <div class = "buttons">
+                <a href = "{% url "editProduct" product.id %}">
                     Edit Product
                 </a>
             </div>
             
             <div class = "buttons">
-                <a href = "{% url "deleteProduct" id %}">
+                <a href = "{% url "deleteProduct" product.id %}">
                     Delete Product
                 </a>
-            </div>
+            </div>  {% endcomment %}
         {% endif %}
     </div>
 
     <script>
         // Configuration
         const PRODUCT_ID = "{{ product.id }}";
-        const PRODUCT_DETAIL_ENDPOINT = `{% url 'show_json_by_id' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', NEWS_ID);
+        const PRODUCT_DETAIL_ENDPOINT = `{% url 'showJSONbyID' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', NEWS_ID);
 
         // DOM Elements
         const loadingState = document.getElementById('loading-state');

@@ -149,7 +149,7 @@
         </div>
 
     {% if productList %}
-        {% comment %} {% for product in productList %}
+        {% for product in productList %}
                 <div class = "itemDisplay">
                     <a href = "{% url "productDetails" product.id %}">
                         <b class = "itemDetail" >
@@ -173,7 +173,7 @@
                         </b>
                     </a>
                 </div>
-            {% endfor %} {% endcomment %}
+            {% endfor %} 
         {% else %}
             <b style = "color:black; font-family: Verdana, Geneva, Tahoma, sans-serif; text-align: left; padding: 0.125cm; padding-top: 1cm; font-size: 100%;">
                 No products for sale
