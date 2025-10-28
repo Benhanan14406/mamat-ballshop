@@ -28,7 +28,7 @@ def homepage(request):
     else:
         productList = Product.objects.filter(user=request.user)
     
-    return render(request, "HomePage.html", {"productList": productList, "username": request.user.username})
+    return render(request, "HomePage.html", {"productList": productList, "user_id": request.user.id, "username": request.user.username})
 
 # Item Creation Form
 @login_required(login_url="/login")
@@ -109,21 +109,21 @@ def show_json(request):
     data = [
         {
             # Attribute wajib
-            'user': product.user,
+            'user': product.user.username if product.user else 'Anonymous',
             'name': str(product.name),
             'price': product.price,
             'description': product.description,
-            'thumbnai': product.thumbnail,
+            'thumbnail': product.thumbnail,
             'category': product.category,
             'is_featured': product.is_featured,
             
             # Attribute custom
-            'id': product.id,
+            'id': str(product.id),
             'lingkar': product.lingkar,
             'stock': product.stock,
             'review': product.review,
             'reviewCount': product.reviewCount,
-            'user_id': product.user_id
+            'user_id': product.user.id if product.user else None,
         }
         for product in productList
     ]
@@ -208,16 +208,34 @@ def addProductAjax(request):
     desc = strip_tags(request.POST.get("description"))
     thumbnail = strip_tags(request.POST.get("thumbnail"))
     category = strip_tags(request.POST.get("category"))
-    is_featured = strip_tags(request.POST.get("is_featured"))
+    is_featured = request.POST.get("is_featured") == "on"
 
     # Attribute custom
-    lingkar = strip_tags(request.POST.get("lingkar"))
+    lingkar = strip_tags(request.POST.get("size"))
     stock = strip_tags(request.POST.get("stock"))
 
-    newBola = Product(user = user, name = name, price = price, description = desc, category = category, thumbnail = thumbnail, is_featured = is_featured, lingkar = lingkar, stock = stock)
+    # Validate required fields
+    if not all([name, price, desc, category, lingkar, stock]):
+        return JsonResponse({'error': 'Missing required fields'}, status=400)
+
+    newBola = Product(
+        user=user, 
+        name=name, 
+        price=price, 
+        description=desc, 
+        category=category, 
+        thumbnail=thumbnail, 
+        is_featured=is_featured, 
+        lingkar=lingkar, 
+        stock=stock
+    )
     newBola.save()
 
-    return HttpResponse(b"CREATED", status=201)
+    return JsonResponse({
+        'status': 'success',
+        'message': 'Product created successfully',
+        'product_id': str(newBola.id)
+    }, status=201)
 
 # CHALLENGE 1.2
 def addEmployee(request):
