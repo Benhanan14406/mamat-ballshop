@@ -6,10 +6,10 @@
         
         <!-- Desktop Navigation -->
         <div class="hidden md:flex items-center space-x-8">
-          <a href="{% url 'main:homepage' %}" class="text-aliceblue hover:text-aliceblue font-medium transition-colors">
+          <a href="{% url 'main:homepage' %}" class="font-medium transition-colors" style="color: aliceblue;">
             Home
           </a>
-          <a href="{% url 'main:createProduct' %}" class="text-aliceblue hover:text-aliceblue font-medium transition-colors">
+          <a href="{% url 'main:createProduct' %}" class="font-medium transition-colors" style="color: aliceblue;">
             Create Product
           </a>
         </div>
@@ -18,16 +18,16 @@
         <div class="hidden md:flex items-center space-x-6">
           {% if user.is_authenticated %}
             <div class="text-right">
-              <div class="text-sm font-medium text-aliceblue">{{ name|default:user.username }}</div>
+              <div class="text-sm font-medium" style="color: aliceblue;">{{ name|default:user.username }}</div>
             </div>
-            <a href="{% url 'main:logout' %}" class="text-aliceblue hover:text-aliceblue font-medium transition-colors">
+            <a href="{% url 'main:logout' %}" class="font-medium transition-colors" style="color: aliceblue;">
               Logout
             </a>
           {% else %}
-            <a href="{% url 'main:login' %}" class="text-aliceblue hover:text-aliceblue font-medium transition-colors">
+            <a href="{% url 'main:login' %}" class="font-medium transition-colors" style="color: aliceblue;">
               Login
             </a>
-            <a href="{% url 'main:register' %}" class="bg-darkslategrey hover:bg-indianred text-white px-4 py-2 rounded font-medium transition-colors">
+            <a href="{% url 'main:register' %}" class="text-white px-4 py-2 rounded font-medium transition-colors" style="background: darkslategrey;">
               Register
             </a>
           {% endif %}
@@ -38,9 +38,9 @@
           <button class="mobile-menu-button p-2 text-aliceblue hover:text-aliceblue transition-colors">
             <span class="sr-only">Open menu</span>
             <div class="w-6 h-6 flex flex-col justify-center items-center">
-              <span class="bg-current block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm"></span>
-              <span class="bg-current block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm my-0.5"></span>
-              <span class="bg-current block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm"></span>
+              <span class="block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm" style="background: aliceblue;"></span>
+              <span class="block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm my-0.5" style="background: aliceblue;"></span>
+              <span class="block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm" style="background: aliceblue;"></span>
             </div>
           </button>
         </div>
@@ -51,10 +51,10 @@
       <div class="px-6 py-4 space-y-4">
         <!-- Mobile Navigation Links -->
         <div class="space-y-1">
-          <a href="{% url 'main:homepage' %}" class="block text-aliceblue hover:text-gray-900 font-medium py-3 transition-colors">
+          <a href="{% url 'main:homepage' %}" class="block hover:text-gray-900 font-medium py-3 transition-colors" >
             Home
           </a>
-          <a href="{% url 'main:createProduct' %}" class="block text-aliceblue hover:text-gray-900 font-medium py-3 transition-colors">
+          <a href="{% url 'main:createProduct' %}" class="block hover:text-gray-900 font-medium py-3 transition-colors">
             Create News
           </a>
         </div>
@@ -63,17 +63,17 @@
         <div class="border-t border-aliceblue pt-4">
           {% if user.is_authenticated %}
             <div class="mb-4">
-              <div class="font-medium text-aliceblue">{{ name|default:user.username }}</div>
+              <div class="font-medium">{{ name|default:user.username }}</div>
             </div>
-            <a href="{% url 'main:logout' %}" class="block text-aliceblue hover:text-red-700 font-medium py-3 transition-colors">
+            <a href="{% url 'main:logout' %}" class="block hover:text-red-700 font-medium py-3 transition-colors">
               Logout
             </a>
           {% else %}
             <div class="space-y-3">
-              <a href="{% url 'main:login' %}" class="block text-aliceblue hover:text-aliceblue font-medium py-3 transition-colors">
+              <a href="{% url 'main:login' %}" class="block font-medium py-3 transition-colors">
                 Login
               </a>
-              <a href="{% url 'main:register' %}" class="block bg-darkslategrey hover:bg-indianred text-aliceblue font-medium py-3 px-4 rounded text-center transition-colors">
+              <a href="{% url 'main:register' %}" class="block font-medium py-3 px-4 rounded text-center transition-colors">
                 Register
               </a>
             </div>

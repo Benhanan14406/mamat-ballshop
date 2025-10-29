@@ -1,4 +1,5 @@
 from django.views.decorators.csrf import csrf_exempt
+from django.middleware.csrf import get_token
 from django.views.decorators.http import require_POST
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
@@ -40,16 +41,16 @@ def createProduct(request):
 
             # Attribute wajib
             user = request.user
-            name = creationForm.checkNameValid
-            price = creationForm.checkPriceValid
-            desc = creationForm.checkDescValid
+            name = creationForm.checkNameValid()
+            price = creationForm.checkPriceValid()
+            desc = creationForm.checkDescValid()
+            category = creationForm.checkCategoryValid()
             thumbnail = creationForm.cleaned_data['thumbnail']
-            category = creationForm.checkCategoryValid
             is_featured = creationForm.cleaned_data['is_featured']
 
             # Attribute custom
-            lingkar = creationForm.checkSizeValid
-            stock = creationForm.checkStockValid
+            lingkar = creationForm.checkSizeValid()
+            stock = creationForm.checkStockValid()
 
             newBola = Product(user = user, name = name, price = price, description = desc, category = category, thumbnail = thumbnail, is_featured = is_featured, lingkar = lingkar, stock = stock)
             newBola.save()
@@ -142,20 +143,20 @@ def show_xml_by_id(request, productId):
 @login_required(login_url="/login")
 def show_json_by_id(request, productId):
     try:
-        product = Product.objects.select_related('user').get(pk = productId)
+        product = Product.objects.select_related('user').get(pk=productId)
         data = [
             {
                 # Attribute wajib
-                'user': product.user,
+                'user': product.user.username if product.user else 'Anonymous',
                 'name': str(product.name),
                 'price': product.price,
                 'description': product.description,
-                'thumbnai': product.thumbnail,
+                'thumbnail': product.thumbnail,
                 'category': product.category,
                 'is_featured': product.is_featured,
                 
                 # Attribute custom
-                'id': product.id,
+                'id': str(product.id),
                 'lingkar': product.lingkar,
                 'stock': product.stock,
                 'review': product.review,
@@ -198,9 +199,12 @@ def logout_user(request):
     response.delete_cookie("last_login")
     return response
 
-@csrf_exempt
 @require_POST
 def addProductAjax(request):
+    csrf_token = request.POST.get('csrfmiddlewaretoken')
+    if not csrf_token:
+        return JsonResponse({'error': 'Missing CSRF token'}, status=403)
+
     # Attribute wajib
     user = request.user
     name = strip_tags(request.POST.get("name"))
