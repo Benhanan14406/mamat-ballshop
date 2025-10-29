@@ -1,261 +1,248 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% load static %}
 
-{% block styles %}
-    .title {
-        color: black; 
-        font-family: Verdana, Geneva, Tahoma, sans-serif;
-        text-align: left; 
-        padding: 0.5cm; 
-        padding-top: 2cm; 
-        font-size: 250%; 
-        max-width: 100%;
-    }
-
-    .button {
-        align: center;
-        background-color: indianred;
-        font-family: Verdana, Geneva, Tahoma, sans-serif; 
-        text-align: center; 
-        font-size: 150%; 
-        max-width: 10cm;
-        left: 50%;
-        float: center;
-        border: 0.1cm;
-        border-color: darkslategrey;
-        border-style: solid;
-        margin: 1cm;
-    }
-
-    .button a {
-        color: aliceblue;
-        margin-bottom: 1cm; 
-    }
-
-    .itemDisplay {
-        background-color: aliceblue; 
-        margin: 1cm; 
-        margin-top: 1cm; 
-        max-width: 7cm;
-        height: fit-content;
-        white-space: nowrap; 
-        font-size: 100vp;
-        padding-top: 1cm;
-        padding-bottom: 1cm;
-        border: 0.1cm;
-        border-color: darkslategrey;
-        border-style: solid;
-        float: left;
-    }
-
-    .itemDisplay a {
-        text-decoration:none;
-    }
-
-    .itemDisplay .itemDetail {
-        color: aliceblue; 
-        font-family: Verdana, Geneva, Tahoma, sans-serif; 
-        text-align: left; 
-        overflow: hidden;
-    }
-
-    .itemDisplay .itemDetail img {
-        width: 6.5cm;
-        height: 6.5cm; 
-        object-fit: contain;
-    }
-{% endblock %}
-
-{% block extraHead %}
-    <div class="mb-8">
-        <button onclick="showModal()" class="inline-flex items-center px-4 py-2 bg-white text-green-600 font-semibold outline outline-2 outline-green-600 outline-offset-[-2px] rounded-md hover:bg-green-600 hover:text-white transition-colors mb-4">
-            Create Product
-        </button>
-    </div>
-{% endblock %}
+{% block meta %}
+<title>Mamat Ballshop</title>
+{% endblock meta %}
 
 {% block content %}
-    <h1 class="title">
-        <b>Products in Stock</b>
-    </h1>
-
-    <div>
-        <button type="button" id="filter-all" onclick="handleShowAllProductsClick()">
-            All Products
-        </button>
+<div class="bg-gray-50 w-full pt-16 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header Section -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Products</h1>
     </div>
 
-    <div>
-        <button type="button" id="filter-my" onclick="handleShowMyProductsClick()">
-            My Products
-        </button>
+    <button onclick="showModal()" class="inline-flex items-center px-4 py-2 bg-indianred text-aliceblue font-semibold outline outline-2 outline-darkslategrey outline-offset-[-2px] rounded-md hover:bg-indianred hover:text-white transition-colors mb-4">
+      Create Products by AJAX
+    </button>
+
+    <!-- Filter Section -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 bg-white rounded-lg border border-gray-200 p-4">
+      <div class="flex space-x-3 mb-4 sm:mb-0">
+        <a id="filter-all" class="bg-green-600 text-white px-4 py-2 rounded-md font-medium transition-colors hover:bg-green-700">
+          All Products
+        </a>
+        <a id="filter-my" class="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-md font-medium transition-colors hover:bg-green-600 hover:text-white">
+          My Products
+        </a>
+      </div>
+      {% if user.is_authenticated %}
+        <div class="text-sm text-gray-500">Last login: {{ last_login }}</div>
+      {% endif %}
     </div>
 
-    <div style="min-height: 7cm;">
-        <div id="loading" class="hidden" style="text-align: center; padding: 2cm;">
-            <p style="color: black; font-size: 125%;">Loading products...</p>
-        </div>
-
-        <div id="error" class="hidden" style="text-align: center; padding: 2cm;">
-            <p style="color: red; font-size: 125%;">Failed to load products. Please try again.</p>
-        </div>
-
-        <div id="grid"></div>
-
-        <div id="empty" class="hidden">
-            <b style="color:black; font-family: Verdana, Geneva, Tahoma, sans-serif; text-align: left; padding: 0.125cm; padding-top: 1cm; font-size: 100%;">
-                No products for sale
-            </b>
-        </div>
+    <!-- Loading State -->
+    <div id="loading" class="bg-white rounded-lg border border-gray-200 p-12 text-center hidden">
+      <svg class="animate-spin h-8 w-8 text-green-600 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+      </svg>
+      <p class="text-gray-600 mt-3">Loading products...</p>
     </div>
 
-    <script>
-        const PRODUCTS_API_ENDPOINT = "{% url 'showJSON' %}";
-        const CURRENT_USER_ID = "{{ user_id|default_if_none:'' }}";
+    <!-- Error State -->
+    <div id="error" class="hidden"></div>
 
-        const loadingSpinner = document.getElementById('loading');
-        const errorMessage = document.getElementById('error');
-        const emptyStateDisplay = document.getElementById('empty');
-        const productsGridContainer = document.getElementById('grid');
-        const showAllProductsButton = document.getElementById('filter-all');
-        const showMyProductsButton = document.getElementById('filter-my');
+    <!-- News Grid -->
+    <div id="grid" class="hidden"></div>
 
-        let activeFilter = 'all';
-        let allProductData = [];
-
-        function updateFilterButtonsAppearance() {
-            if (!showAllProductsButton || !showMyProductsButton) return;
-            
-            if (activeFilter === 'all') {
-                showAllProductsButton.style.backgroundColor = 'indianred';
-                showAllProductsButton.style.color = 'white';
-                showMyProductsButton.style.backgroundColor = 'white';
-                showMyProductsButton.style.color = 'black';
-            } else {
-                showMyProductsButton.style.backgroundColor = 'indianred';
-                showMyProductsButton.style.color = 'white';
-                showAllProductsButton.style.backgroundColor = 'white';
-                showAllProductsButton.style.color = 'black';
-            }
-        }
-
-        function displayPageSection({ showLoading = false, showError = false, showEmpty = false, showGrid = false }) {
-            loadingSpinner.classList.toggle('hidden', !showLoading);
-            errorMessage.classList.toggle('hidden', !showError);
-            emptyStateDisplay.classList.toggle('hidden', !showEmpty);
-            productsGridContainer.classList.toggle('hidden', !showGrid);
-        }
-
-        function buildProductCardElement(product) {
-            const productDiv = document.createElement('div');
-            productDiv.className = 'itemDisplay';
-
-            const detailLink = `{% url 'productDetails' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', product.id);
-            const editLink = `{% url 'editProduct' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', product.id);
-            const deleteLink = `{% url 'deleteProduct' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', product.id);
-
-            const editDeleteButtons = CURRENT_USER_ID && CURRENT_USER_ID === product.user_id
-                ? `<div style="margin-top: 0.5cm;">
-                    <a href="${editLink}" style="color: black; margin-right: 0.5cm;">Edit</a>
-                    <a href="${deleteLink}" style="color: red;" onclick="return confirm('Are you sure you want to delete this product?')">Delete</a>
-                </div>`
-                : '';
-
-            productDiv.innerHTML = `
-                <a href="${detailLink}">
-                    <b class="itemDetail">
-                        <div style="font-size: 150%; color: black; margin-bottom: 0.5cm;">
-                            ${DOMPurify.sanitize(product.name)}
-                        </div>
-                        <img src="${DOMPurify.sanitize(product.thumbnail)}" alt="${DOMPurify.sanitize(product.name)}">
-                        <div style="font-size: 100%; color: black; margin-top: 0.5cm;">
-                            ${DOMPurify.sanitize(product.description)}
-                        </div>
-                        <div style="font-size: 125%; color: black;">
-                            Price: ${DOMPurify.sanitize(product.price)}
-                        </div>
-                    </b>
-                </a>
-                ${editDeleteButtons}
-            `;
-
-            return productDiv;
-        }
-
-        function renderAllProductCards(products) {
-            productsGridContainer.innerHTML = '';
-            products.forEach(product => {
-                const cardElement = buildProductCardElement(product);
-                productsGridContainer.appendChild(cardElement);
-            });
-        }
-
-        function filterAndDisplayProducts() {
-            updateFilterButtonsAppearance();
-            
-            let filteredProducts = [];
-            if (activeFilter === 'all') {
-                filteredProducts = allProductData;
-            } else {
-                filteredProducts = allProductData.filter(product => product.user_id === CURRENT_USER_ID);
-            }
-
-            console.log("Current user ID:", CURRENT_USER_ID);
-            console.log(allProductData);
-            console.log("PRODUCTS_API_ENDPOINT =", PRODUCTS_API_ENDPOINT);
-
-            if (filteredProducts.length === 0) {
-                displayPageSection({ showEmpty: true });
-            } else {
-                renderAllProductCards(filteredProducts);
-                displayPageSection({ showGrid: true });
-            }
-        }
-
-        async function fetchProductsFromServer() {
-            try {
-                displayPageSection({ showLoading: true });
-                
-                const response = await fetch(PRODUCTS_API_ENDPOINT, {
-                    headers: { 'Accept': 'application/json' },
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch product data from server');
-                }
-
-                const productData = await response.json();
-                allProductData = productData || [];
-                filterAndDisplayProducts();
-
-                console.log("Current user ID:", CURRENT_USER_ID);
-                console.log(allProductData);
-                console.log("PRODUCTS_API_ENDPOINT =", PRODUCTS_API_ENDPOINT);
-            } catch (error) {
-                console.error('Error loading products:', error);
-                displayPageSection({ showError: true });
-            }
-        }
-
-        function handleShowAllProductsClick() {
-            activeFilter = 'all';
-            filterAndDisplayProducts();
-        }
-
-        function handleShowMyProductsClick() {
-            activeFilter = 'my';
-            filterAndDisplayProducts();
-        }
-
-        function initializeProductsPage() {
-            fetchProductsFromServer();
-        }
-
-        initializeProductsPage();
-
-        document.addEventListener('productAdded', function() {
-            fetchProductsFromServer();
-        });
-    </script>
-
+    <!-- Empty State -->
+    <div id="empty" class="bg-white rounded-lg border border-gray-200 p-12 text-center hidden">
+      <div class="w-32 h-32 mx-auto mb-4">
+        <img src="{% static 'image/no-news.png' %}" alt="No products available" class="w-full h-full object-contain">
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">No products found</h3>
+      <a href="{% url 'main:createProduct' %}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
+        Create Products
+      </a>
+    </div>
+  </div>
+  <div>
     {% include 'modal.html' %}
-{% endblock %}
+  </div>
+</div>
+
+<script>
+// Configuration
+const NEWS_API_ENDPOINT = "{% url 'main:showJSON' %}";
+const CURRENT_USER_ID = "{{ user.id|default_if_none:'' }}";
+
+// DOM Elements
+const loadingSpinner = document.getElementById('loading');
+const errorMessage = document.getElementById('error');
+const emptyStateDisplay = document.getElementById('empty');
+const newsGridContainer = document.getElementById('grid');
+const showAllNewsButton = document.getElementById('filter-all');
+const showMyNewsButton = document.getElementById('filter-my');
+
+// State Variables
+let activeFilter = 'all';
+let allNewsData = [];
+
+// Update filter button appearance
+function updateFilterButtonsAppearance() {
+  if (!showAllNewsButton || !showMyNewsButton) return;
+  
+  if (activeFilter === 'all') {
+    showAllNewsButton.className = 'bg-green-600 text-white px-4 py-2 rounded-md font-medium transition-colors hover:bg-green-700';
+    showMyNewsButton.className = 'bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-md font-medium transition-colors hover:bg-green-600 hover:text-white';
+  } else {
+    showMyNewsButton.className = 'bg-green-600 text-white px-4 py-2 rounded-md font-medium transition-colors hover:bg-green-700';
+    showAllNewsButton.className = 'bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-md font-medium transition-colors hover:bg-green-600 hover:text-white';
+  }
+}
+
+// Show/hide page sections
+function displayPageSection({ showLoading = false, showError = false, showEmpty = false, showGrid = false }) {
+  loadingSpinner.classList.toggle('hidden', !showLoading);
+  errorMessage.classList.toggle('hidden', !showError);
+  emptyStateDisplay.classList.toggle('hidden', !showEmpty);
+  newsGridContainer.classList.toggle('hidden', !showGrid);
+  
+  // Add grid classes when showing grid
+  if (showGrid) {
+    newsGridContainer.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+  }
+}
+
+// Get readable category name
+function getReadableCategoryName(categoryCode) {
+  const categoryMapping = {
+    bolaFutsal: 'Bola Futsal',
+    bolaBasket: 'Bola Basket',
+    bolaVoli: 'Bola Voli',
+  };
+  return categoryMapping[categoryCode] || categoryCode;
+}
+
+// Create news card element
+function buildNewsCardElement(item) {
+    const article = document.createElement('article');
+    article.className = 'bg-white rounded-lg border border-gray-200 hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col h-full';
+
+    const linkDetail = `{% url 'main:productDetails' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', item.id);
+    const linkEdit = `{% url 'main:editProduct' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', item.id);
+    const linkDelete = `{% url 'main:deleteProduct' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', item.id);
+
+    const title = DOMPurify.sanitize(item.title);
+    const content = DOMPurify.sanitize(item.description);
+    const category = DOMPurify.sanitize(item.category);
+    const thumbnail = DOMPurify.sanitize(item.thumbnail);
+    const isFeatured = item.is_featured;
+
+    const thumbnailHtml = DOMPurify.sanitize(
+        item.thumbnail ? `<img src='${thumbnail}' alt='${title}' class='w-full h-full object-cover'>` : `<div class='w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center'></div>`
+    );
+    const categoryLabel = DOMPurify.sanitize(getReadableCategoryName(category));
+    const featuredLabel = isFeatured ? DOMPurify.sanitize(`<span class='inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-800'>Featured</span>`) : '';
+
+    const editDeleteHtml = CURRENT_USER_ID && Number(CURRENT_USER_ID) === Number(item.user_id)
+        ? `<div class='flex space-x-2'>
+            <a href='${linkEdit}' class='text-gray-600 hover:text-gray-700 text-sm transition-colors'>Edit</a>
+            <a href='${linkDelete}' class='text-red-600 hover:text-red-700 text-sm transition-colors' onclick='return confirm("Are you sure you want to delete this article?")'>Delete</a>
+          </div>`
+        : '';
+
+    const cardHtml = `
+        <div class="aspect-[16/9] relative overflow-hidden">
+          ${thumbnailHtml}
+          <div class="absolute top-3 left-3">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-green-600 text-white">${categoryLabel}</span>
+          </div>
+          <div class="absolute top-3 right-3 flex space-x-2">
+            ${featuredLabel}
+          </div>
+        </div>
+        <div class="p-5 flex flex-col flex-1">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3 line-clamp-2 leading-tight">
+            <a href="${linkDetail}" class="hover:text-green-600 transition-colors">${title}</a>
+          </h3>
+          <p class="text-gray-600 text-sm leading-relaxed line-clamp-3 mb-4">${content}</p>
+          <div class="pt-4 border-t border-gray-100 flex items-center justify-between">
+            <a href="${linkDetail}" class="text-green-600 hover:text-green-700 font-medium text-sm transition-colors">Read more</a>
+            ${editDeleteHtml}
+          </div>
+        </div>
+    `;
+    
+    article.innerHTML = cardHtml;
+    return article;
+}
+
+// Render all news cards
+function renderAllNewsCards(newsItems) {
+  newsGridContainer.innerHTML = '';
+  newsItems.forEach(newsItem => {
+    const cardElement = buildNewsCardElement(newsItem);
+    newsGridContainer.appendChild(cardElement);
+  });
+}
+
+// Filter and display news
+function filterAndDisplayNews() {
+  updateFilterButtonsAppearance();
+  
+  const filteredNews = activeFilter === 'all' 
+    ? allNewsData 
+    : allNewsData.filter(news => Number(news.user_id) === Number(CURRENT_USER_ID));
+  
+  if (filteredNews.length === 0) {
+    displayPageSection({ showEmpty: true });
+  } else {
+    renderAllNewsCards(filteredNews);
+    displayPageSection({ showGrid: true });
+  }
+}
+
+// Fetch news data from server
+async function fetchNewsFromServer() {
+  try {
+    displayPageSection({ showLoading: true });
+    
+    const response = await fetch(NEWS_API_ENDPOINT, {
+      headers: { 'Accept': 'application/json' },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch products data from server');
+    }
+
+    const newsData = await response.json();
+    allNewsData = newsData || [];
+    
+    filterAndDisplayNews();
+  } catch (error) {
+    console.error('Error loading news:', error);
+    displayPageSection({ showError: true });
+  }
+}
+
+// Event handlers
+function handleShowAllNewsClick() {
+  activeFilter = 'all';
+  filterAndDisplayNews();
+}
+
+function handleShowMyNewsClick() {
+  activeFilter = 'my';
+  filterAndDisplayNews();
+}
+
+// Initialize page
+function initializeNewsPage() {
+  showAllNewsButton.addEventListener('click', handleShowAllNewsClick);
+  showMyNewsButton.addEventListener('click', handleShowMyNewsClick);
+  
+  fetchNewsFromServer();
+}
+
+// Start application
+initializeNewsPage();
+
+document.addEventListener('newsAdded', function() {
+    // Refresh data without page reload
+    fetchNewsFromServer();
+});
+</script>
+{% endblock content %}

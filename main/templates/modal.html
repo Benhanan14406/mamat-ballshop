@@ -92,7 +92,7 @@
   }
 
   async function addProduct() {
-    await fetch("{% url 'addProductAjax' %}", {
+    await fetch("{% url 'main:addProductAjax' %}", {
       method: "POST",
       body: new FormData(document.querySelector('#productForm')),
     })

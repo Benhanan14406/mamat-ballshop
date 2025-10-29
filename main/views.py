@@ -55,7 +55,7 @@ def createProduct(request):
             newBola.save()
 
             # Kembali ke Home Page
-            return HttpResponseRedirect(reverse("homepage"))
+            return HttpResponseRedirect(reverse("main:homepage"))
     else:
         creationForm = ProductCreationForm()
     return render(request, "ProductCreationPage.html", {"creationForm": creationForm})
@@ -75,7 +75,7 @@ def editProduct(request, productId):
         product.stock = request.POST["stock"]
 
         product.save()
-        return HttpResponseRedirect(reverse("homepage"))
+        return HttpResponseRedirect(reverse("main:homepage"))
     else:
         creationForm = ProductCreationForm()
     return render(request, "ProductCreationPage.html", {"creationForm": creationForm, "product": product})
@@ -84,7 +84,7 @@ def editProduct(request, productId):
 def deleteProduct(request, productId):
     productToDelete = get_object_or_404(Product, pk = productId)
     productToDelete.delete()
-    return HttpResponseRedirect(reverse("homepage"))
+    return HttpResponseRedirect(reverse("main:homepage"))
 
 
 # Product Details Page
@@ -174,7 +174,7 @@ def register(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Your account has been successfully created!")
-            return redirect("login")
+            return redirect("main:login")
     return render(request, "Register.html", {'form':form})
 
 def login_user(request):
@@ -184,7 +184,7 @@ def login_user(request):
       if form.is_valid():
         user = form.get_user()
         login(request, user)
-        response = HttpResponseRedirect(reverse("homepage"))
+        response = HttpResponseRedirect(reverse("main:homepage"))
         response.set_cookie("last_login", str(datetime.datetime.now()))
         return response
 
@@ -194,7 +194,7 @@ def login_user(request):
 
 def logout_user(request):
     logout(request)
-    response = HttpResponseRedirect(reverse("login"))
+    response = HttpResponseRedirect(reverse("main:login"))
     response.delete_cookie("last_login")
     return response
 
