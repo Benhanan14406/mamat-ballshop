@@ -96,7 +96,7 @@ def productDetails(request, productId):
     if not product:
         return render(request, "404.html", status=404)
     else:
-        return render(request, "ProductDetailsPage.html", {"productViewed": product, "currentUser": request.user})
+        return render(request, "ProductDetailsPage.html", {"product": product, "currentUser": request.user})
 
 @login_required(login_url="/login")
 def show_xml(request):
@@ -143,29 +143,30 @@ def show_xml_by_id(request, productId):
 @login_required(login_url="/login")
 def show_json_by_id(request, productId):
     try:
-        product = Product.objects.select_related('user').get(pk=productId)
-        data = [
-            {
-                # Attribute wajib
-                'user': product.user.username if product.user else 'Anonymous',
-                'name': str(product.name),
-                'price': product.price,
-                'description': product.description,
-                'thumbnail': product.thumbnail,
-                'category': product.category,
-                'is_featured': product.is_featured,
-                
-                # Attribute custom
-                'id': str(product.id),
-                'lingkar': product.lingkar,
-                'stock': product.stock,
-                'review': product.review,
-                'reviewCount': product.reviewCount
-            }
-        ]
-        return JsonResponse(data)
+        product = Product.objects.get(pk=productId)
+        data = [{
+            'name': str(product.name),
+            'price': product.price,
+            'description': product.description,
+            'thumbnail': product.thumbnail,
+            'category': product.category,
+            'is_featured': product.is_featured,
+            'id': str(product.id),
+            'lingkar': product.lingkar,
+            'stock': product.stock,
+            'review': getattr(product, 'review', 0),
+            'reviewCount': getattr(product, 'reviewCount', 0),
+            'user': product.user.username if getattr(product, 'user', None) else 'Anonymous',
+            'user_id': product.user.id if getattr(product, 'user', None) else None,
+        }]
+        return JsonResponse(data, safe=False)
     except Product.DoesNotExist:
         return JsonResponse({'detail': 'Not found'}, status=404)
+    except Exception as e:
+        import traceback
+        print("💥 ERROR in show_json_by_id:", e)
+        traceback.print_exc()
+        return JsonResponse({'error': str(e)}, status=500)
 
 def register(request):
     form = UserCreationForm()
