@@ -1,21 +1,8 @@
 from django.views.decorators.csrf import csrf_exempt
-from django.middleware.csrf import get_token
-from django.views.decorators.http import require_POST
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login, logout
-from django.contrib import messages
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.core import serializers
-from django.urls import reverse
-from django.utils.html import strip_tags
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.models import User
+from django.http import JsonResponse
 import json
-from .models import *
-import datetime
-
-# Create your views here.
 @csrf_exempt
 def login(request):
     username = request.POST['username']
@@ -23,20 +10,17 @@ def login(request):
     user = authenticate(username=username, password=password)
     if user is not None:
         if user.is_active:
-            login(request, user)
-            # Login status successful.
+            auth_login(request, user)
             return JsonResponse({
                 "username": user.username,
                 "status": True,
                 "message": "Login successful!"
-                # Add other data if you want to send data to Flutter.
             }, status=200)
         else:
             return JsonResponse({
                 "status": False,
                 "message": "Login failed, account is disabled."
             }, status=401)
-
     else:
         return JsonResponse({
             "status": False,
@@ -74,9 +58,24 @@ def register(request):
             "status": 'success',
             "message": "User created successfully!"
         }, status=200)
-    
     else:
         return JsonResponse({
             "status": False,
             "message": "Invalid request method."
         }, status=400)
+
+@csrf_exempt
+def logout(request):
+    username = request.user.username
+    try:
+        auth_logout(request)
+        return JsonResponse({
+            "username": username,
+            "status": True,
+            "message": "Logged out successfully!"
+        }, status=200)
+    except:
+        return JsonResponse({
+            "status": False,
+            "message": "Logout failed."
+        }, status=401)

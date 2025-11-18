@@ -18,7 +18,7 @@ class Product(models.Model):
     
     # Attribute custom
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
-    lingkar = models.FloatField(default=0, editable=False)
+    size = models.FloatField(default=0, editable=False)
     stock = models.PositiveIntegerField(default=0, editable=True)
     review = models.SmallIntegerField(default=0, editable=True)
     reviewCount = models.PositiveIntegerField(default=0, editable=True)

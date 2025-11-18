@@ -13,6 +13,8 @@ from django.utils.html import strip_tags
 from .models import *
 from .forms import *
 import datetime
+import requests
+import json
 
 # Create your views here.
 # productList = [Product(name = "Bola 1", price = 100, description = "Bola pertama dijual", thumbnail = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Football_Pallo_valmiina-cropped.jpg/250px-Football_Pallo_valmiina-cropped.jpg", category = "Bola futsal", is_featured = True, lingkar = 60, stock = 100), 
@@ -49,7 +51,7 @@ def createProduct(request):
             is_featured = creationForm.cleaned_data['is_featured']
 
             # Attribute custom
-            lingkar = creationForm.checkSizeValid()
+            size = creationForm.checkSizeValid()
             stock = creationForm.checkStockValid()
 
             newBola = Product(user = user, name = name, price = price, description = desc, category = category, thumbnail = thumbnail, is_featured = is_featured, lingkar = lingkar, stock = stock)
@@ -98,13 +100,11 @@ def productDetails(request, productId):
     else:
         return render(request, "ProductDetailsPage.html", {"product": product, "currentUser": request.user})
 
-@login_required(login_url="/login")
 def show_xml(request):
     productList = Product.objects.all()
     xml_data = serializers.serialize("xml", productList)
     return HttpResponse(xml_data, content_type="application/xml")
 
-@login_required(login_url="/login")
 def show_json(request):
     productList = Product.objects.all()
     data = [
@@ -120,7 +120,7 @@ def show_json(request):
             
             # Attribute custom
             'id': str(product.id),
-            'lingkar': product.lingkar,
+            'size': product.size,
             'stock': product.stock,
             'review': product.review,
             'reviewCount': product.reviewCount,
@@ -131,7 +131,6 @@ def show_json(request):
 
     return JsonResponse(data, safe=False)
 
-@login_required(login_url="/login")
 def show_xml_by_id(request, productId):
     try:
        product = Product.objects.filter(pk = productId)
@@ -140,7 +139,6 @@ def show_xml_by_id(request, productId):
     except Product.DoesNotExist:
        return HttpResponse(status=404)
 
-@login_required(login_url="/login")
 def show_json_by_id(request, productId):
     try:
         product = Product.objects.get(pk=productId)
@@ -152,7 +150,7 @@ def show_json_by_id(request, productId):
             'category': product.category,
             'is_featured': product.is_featured,
             'id': str(product.id),
-            'lingkar': product.lingkar,
+            'size': product.size,
             'stock': product.stock,
             'review': getattr(product, 'review', 0),
             'reviewCount': getattr(product, 'reviewCount', 0),
@@ -216,11 +214,11 @@ def addProductAjax(request):
     is_featured = request.POST.get("is_featured") == "on"
 
     # Attribute custom
-    lingkar = strip_tags(request.POST.get("size"))
+    size = strip_tags(request.POST.get("size"))
     stock = strip_tags(request.POST.get("stock"))
 
     # Validate required fields
-    if not all([name, price, desc, category, lingkar, stock]):
+    if not all([name, price, desc, category, size, stock]):
         return JsonResponse({'error': 'Missing required fields'}, status=400)
 
     newBola = Product(
@@ -231,7 +229,7 @@ def addProductAjax(request):
         category=category, 
         thumbnail=thumbnail, 
         is_featured=is_featured, 
-        lingkar=lingkar, 
+        size=size, 
         stock=stock
     )
     newBola.save()
@@ -269,3 +267,53 @@ def createCar(request):
     else:
         creationForm = CarCreationForm()
     return render(request, "CarCreationPage.html", {"carList": carList, "creationForm": creationForm})
+
+def proxy_image(request):
+    image_url = request.GET.get('url')
+    if not image_url:
+        return HttpResponse('No URL provided', status=400)
+    
+    try:
+        # Fetch image from external source
+        response = requests.get(image_url, timeout=10)
+        response.raise_for_status()
+        
+        # Return the image with proper content type
+        return HttpResponse(
+            response.content,
+            content_type=response.headers.get('Content-Type', 'image/jpeg')
+        )
+    except requests.RequestException as e:
+        return HttpResponse(f'Error fetching image: {str(e)}', status=500)
+    
+@csrf_exempt
+def create_product_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        name = strip_tags(data.get("name", ""))  # Strip HTML tags
+        description = strip_tags(data.get("description", ""))  # Strip HTML tags
+        category = data.get("category", "")
+        price = data.get("price", "")
+        size = data.get("size", "")
+        stock = data.get("stock", "")
+        thumbnail = data.get("thumbnail", "")
+        is_featured = data.get("is_featured", False)
+        user = request.user
+        
+        newProduct = Product(
+            name=name, 
+            description=description,
+            category=category,
+            price=price,
+            size=size,
+            sock=stock,
+            thumbnail=thumbnail,
+            is_featured=is_featured,
+            user=user
+        )
+        newProduct.save()
+        
+        return JsonResponse({"status": "success"}, status=200)
+    else:
+        return JsonResponse({"status": "error"}, status=401)
+    
