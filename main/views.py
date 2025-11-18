@@ -1,4 +1,5 @@
 from django.views.decorators.csrf import csrf_exempt
+from django.middleware.csrf import get_token
 from django.views.decorators.http import require_POST
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
@@ -40,22 +41,22 @@ def createProduct(request):
 
             # Attribute wajib
             user = request.user
-            name = creationForm.checkNameValid
-            price = creationForm.checkPriceValid
-            desc = creationForm.checkDescValid
+            name = creationForm.checkNameValid()
+            price = creationForm.checkPriceValid()
+            desc = creationForm.checkDescValid()
+            category = creationForm.checkCategoryValid()
             thumbnail = creationForm.cleaned_data['thumbnail']
-            category = creationForm.checkCategoryValid
             is_featured = creationForm.cleaned_data['is_featured']
 
             # Attribute custom
-            lingkar = creationForm.checkSizeValid
-            stock = creationForm.checkStockValid
+            lingkar = creationForm.checkSizeValid()
+            stock = creationForm.checkStockValid()
 
             newBola = Product(user = user, name = name, price = price, description = desc, category = category, thumbnail = thumbnail, is_featured = is_featured, lingkar = lingkar, stock = stock)
             newBola.save()
 
             # Kembali ke Home Page
-            return HttpResponseRedirect(reverse("homepage"))
+            return HttpResponseRedirect(reverse("main:homepage"))
     else:
         creationForm = ProductCreationForm()
     return render(request, "ProductCreationPage.html", {"creationForm": creationForm})
@@ -75,7 +76,7 @@ def editProduct(request, productId):
         product.stock = request.POST["stock"]
 
         product.save()
-        return HttpResponseRedirect(reverse("homepage"))
+        return HttpResponseRedirect(reverse("main:homepage"))
     else:
         creationForm = ProductCreationForm()
     return render(request, "ProductCreationPage.html", {"creationForm": creationForm, "product": product})
@@ -84,7 +85,7 @@ def editProduct(request, productId):
 def deleteProduct(request, productId):
     productToDelete = get_object_or_404(Product, pk = productId)
     productToDelete.delete()
-    return HttpResponseRedirect(reverse("homepage"))
+    return HttpResponseRedirect(reverse("main:homepage"))
 
 
 # Product Details Page
@@ -95,7 +96,7 @@ def productDetails(request, productId):
     if not product:
         return render(request, "404.html", status=404)
     else:
-        return render(request, "ProductDetailsPage.html", {"productViewed": product, "currentUser": request.user})
+        return render(request, "ProductDetailsPage.html", {"product": product, "currentUser": request.user})
 
 @login_required(login_url="/login")
 def show_xml(request):
@@ -142,29 +143,30 @@ def show_xml_by_id(request, productId):
 @login_required(login_url="/login")
 def show_json_by_id(request, productId):
     try:
-        product = Product.objects.select_related('user').get(pk = productId)
-        data = [
-            {
-                # Attribute wajib
-                'user': product.user,
-                'name': str(product.name),
-                'price': product.price,
-                'description': product.description,
-                'thumbnai': product.thumbnail,
-                'category': product.category,
-                'is_featured': product.is_featured,
-                
-                # Attribute custom
-                'id': product.id,
-                'lingkar': product.lingkar,
-                'stock': product.stock,
-                'review': product.review,
-                'reviewCount': product.reviewCount
-            }
-        ]
-        return JsonResponse(data)
+        product = Product.objects.get(pk=productId)
+        data = [{
+            'name': str(product.name),
+            'price': product.price,
+            'description': product.description,
+            'thumbnail': product.thumbnail,
+            'category': product.category,
+            'is_featured': product.is_featured,
+            'id': str(product.id),
+            'lingkar': product.lingkar,
+            'stock': product.stock,
+            'review': getattr(product, 'review', 0),
+            'reviewCount': getattr(product, 'reviewCount', 0),
+            'user': product.user.username if getattr(product, 'user', None) else 'Anonymous',
+            'user_id': product.user.id if getattr(product, 'user', None) else None,
+        }]
+        return JsonResponse(data, safe=False)
     except Product.DoesNotExist:
         return JsonResponse({'detail': 'Not found'}, status=404)
+    except Exception as e:
+        import traceback
+        print("💥 ERROR in show_json_by_id:", e)
+        traceback.print_exc()
+        return JsonResponse({'error': str(e)}, status=500)
 
 def register(request):
     form = UserCreationForm()
@@ -174,7 +176,7 @@ def register(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Your account has been successfully created!")
-            return redirect("login")
+            return redirect("main:login")
     return render(request, "Register.html", {'form':form})
 
 def login_user(request):
@@ -184,7 +186,7 @@ def login_user(request):
       if form.is_valid():
         user = form.get_user()
         login(request, user)
-        response = HttpResponseRedirect(reverse("homepage"))
+        response = HttpResponseRedirect(reverse("main:homepage"))
         response.set_cookie("last_login", str(datetime.datetime.now()))
         return response
 
@@ -194,13 +196,16 @@ def login_user(request):
 
 def logout_user(request):
     logout(request)
-    response = HttpResponseRedirect(reverse("login"))
+    response = HttpResponseRedirect(reverse("main:login"))
     response.delete_cookie("last_login")
     return response
 
-@csrf_exempt
 @require_POST
 def addProductAjax(request):
+    csrf_token = request.POST.get('csrfmiddlewaretoken')
+    if not csrf_token:
+        return JsonResponse({'error': 'Missing CSRF token'}, status=403)
+
     # Attribute wajib
     user = request.user
     name = strip_tags(request.POST.get("name"))
