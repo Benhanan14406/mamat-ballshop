@@ -35,6 +35,9 @@
         <a id="filter-my" class="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-md font-medium transition-colors hover:bg-green-600 hover:text-white">
           My Products
         </a>
+        <a id="sort-products" class="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-md font-medium transition-colors hover:bg-green-600 hover:text-white">
+          Sort Products
+        </a>
       </div>
       {% if user.is_authenticated %}
         <div class="text-sm text-gray-500">Last login: {{ user }}</div>
@@ -84,6 +87,7 @@ const emptyStateDisplay = document.getElementById('empty');
 const newsGridContainer = document.getElementById('grid');
 const showAllNewsButton = document.getElementById('filter-all');
 const showMyNewsButton = document.getElementById('filter-my');
+const sortButton = document.getElementById('sort-products');
 
 const DETAILS_URL = `{% url 'main:productDetails' '00000000-0000-0000-0000-000000000000' %}`;
 const EDIT_URL = `{% url 'main:editProduct' '00000000-0000-0000-0000-000000000000' %}`;
@@ -91,6 +95,7 @@ const DELETE_URL = `{% url 'main:deleteProduct' '00000000-0000-0000-0000-0000000
 
 // State Variables
 let activeFilter = 'all';
+let sort = false;
 let allNewsData = [];
 
 // Update filter button appearance
@@ -216,6 +221,10 @@ function filterAndDisplayNews() {
     ? allNewsData 
     : allNewsData.filter(news => Number(news.user_id) === Number(CURRENT_USER_ID));
   
+  if (sort === true) {
+    filteredNews.sort((a, b) => Number(a.price) - Number(b.price));
+  }
+
   if (filteredNews.length === 0) {
     displayPageSection({ showEmpty: true });
   } else {
@@ -258,11 +267,16 @@ function handleShowMyNewsClick() {
   filterAndDisplayNews();
 }
 
+function sortProducts() {
+  sort = true;
+  filterAndDisplayNews();
+}
+
 // Initialize page
 function initializeNewsPage() {
   showAllNewsButton.addEventListener('click', handleShowAllNewsClick);
   showMyNewsButton.addEventListener('click', handleShowMyNewsClick);
-  
+  sortButton.addEventListener('click', sortProducts);
   fetchNewsFromServer();
 }
 
@@ -273,5 +287,6 @@ document.addEventListener('productAdded', function() {
     // Refresh data without page reload
     fetchNewsFromServer();
 });
+
 </script>
 {% endblock content %}
