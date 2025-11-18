@@ -306,7 +306,7 @@ def create_product_flutter(request):
             category=category,
             price=price,
             size=size,
-            sock=stock,
+            stock=stock,
             thumbnail=thumbnail,
             is_featured=is_featured,
             user=user
